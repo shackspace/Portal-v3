@@ -1,17 +1,19 @@
-
+#!/bin/sh
 #initial bootstrapping script
-#creates users and shit.
-echo "open:x:1338:1338:open the door,,,:/var/portal/open:/var/portal/open/open.sh" >>/etc/passwd
-echo "close:x:1338:1338:close the door,,,:/var/portal/close:/var/portal/close/close.sh" >>/etc/passwd
-echo "openclose:x:1338:" >>/etc/group
 
-echo "/var/portal/open/open.sh" >>/etc/shells
-echo "/var/portal/close/close.sh" >>/etc/shells
+#create users and group
+groupadd openclose
+useradd -b /var/portal -G openclose -m open
+useradd -b /var/portal -G openclose -m close
 
-chown -R open:openclose /var/portal/open
-chown -R open:openclose /var/portal/close
+#set permissions
+chgrp -R openclose /var/portal/open
+chgrp -R openclose /var/portal/close
 
-touch /var/portal/access.log
-chown open:openclose /var/portal/access.log
+#set permissions to access.log
+touch /var/portallog/access.log
+chgrp openclose /var/portallog/access.log
+chmod -R 775 /var/portallog
 
-cat /var/portal/motd >/etc/banner
+#execute GPIO-init script
+./init.sh
