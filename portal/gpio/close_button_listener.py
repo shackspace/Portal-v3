@@ -28,5 +28,4 @@ def close_door():
     
 
 if __name__ == '__main__':
-    GPIO.wait_for_interrupts()
     main()
