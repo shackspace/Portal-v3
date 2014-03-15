@@ -57,22 +57,42 @@ def get_db():
     cur = conn.cursor()
     return cur, conn
 
+
 def gen_keyfile(dataset, task):
     """takes the data and builds a keyfile"""
     filename = OUTFILE
     filename += '.' + task
 
     f = open(filename, 'w')
-    security_options = "no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty"
+    security_options = ["no-port-forwarding",
+                        "no-X11-forwarding",
+                        "no-agent-forwarding",
+                        "no-pty"]
+    security_options = ','.join(security_options)
     command = '/var/portal/' + task + '/' + task + ' '
-
 
     for keymember in dataset:
         parameter = []
         parameter.append("-s")
         parameter.append(str(keymember["serial"]))
         parameter.append("-n")
-        parameter.append(keymember["name"] + "_" + keymember["surname"])
+        name = ' '.join([keymember["name"], keymember["surname"]])
+        name = name.strip()
+        parameter.append('"' + name + '"')
+        if keymember["lastValid"]:
+            parameter.append("-l")
+            parameter.append(keymember["lastValid"].split()[0])
+        if keymember["firstValid"]:
+            parameter.append("-f")
+            parameter.append(keymember["firstValid"].split()[0])
+        if keymember["created"]:
+            parameter.append("-c")
+            parameter.append(keymember["created"].split()[0])
+        if keymember["nickname"]:
+            nickname = keymember["nickname"]
+            nickname = nickname.strip()
+            parameter.append("--nick")
+            parameter.append('"' + nickname +'"')
 
         parameterlist = ' '.join(parameter)
 
