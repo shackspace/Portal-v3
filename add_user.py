@@ -5,7 +5,9 @@ import sqlite3
 import sys
 from optparse import OptionParser
 
+
 DATABASE = 'shackspacekey.sqlite'
+
 
 def main():
     parser = OptionParser()
@@ -34,21 +36,20 @@ def main():
                       '(YYYYMMDD)')
 
     (options, args) = parser.parse_args()
-
     (cur, conn) = get_db()
-
 
     if not options.serial:
         print('Please provide a member number')
         sys.exit(1)
 
-    #if serial_exists(options.serial, cur):
     if not options.keyfile:
         print('Please provide a keyfile')
         sys.exit(1)
+
     if not options.name:
         print('Please provide a name')
         sys.exit(1)
+
     if not options.surname:
         print('Please provide a surname')
         sys.exit(1)
@@ -56,18 +57,23 @@ def main():
     add_user(cur, options.serial, options.keyfile, options.name, options.surname)
     conn.commit()
 
+
 def add_user(cur, serial, keyfile, name, surname, nickname=None, lastValid=None, firstValid=None):
     field = ['serial', 'pubkey', 'name', 'surname']
     value = [serial, get_key(keyfile), name, surname]
+
     if nickname:
         field.append('nickname')
         value.append(nickname)
+        
     if lastValid:
         field.append('lastValid')
         value.append(lastValid)
+
     if firstValid:
         field.append('firstValid')
         value,append(firstValid)
+
     field_list = ','.join(field)
     questionmarks = "?" * (len(field))
     questionmarks = ','.join(questionmarks)
@@ -82,10 +88,12 @@ def get_key(keyfile):
     key = key.strip()
     return key
 
+
 def get_db():
     conn = sqlite3.connect(DATABASE)
     cur = conn.cursor()
     return cur, conn
+
 
 def serial_exists(serial, cur):
     cur.execute('SELECT * FROM user WHERE serial = ?', (serial,))
