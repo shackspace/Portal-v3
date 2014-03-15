@@ -14,7 +14,4 @@
     [ ] display support
     [ ] message-queue integration
     [ ] bootstrap-script
-        [ ] new users with adduser instead of echo
-        [ ] log-location with access for both users
         [ ] pull repo, auto-pull from master
-        [ ] symlink files
