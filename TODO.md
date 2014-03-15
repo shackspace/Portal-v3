@@ -1,7 +1,16 @@
+#LOCAL
+
     [ ] key validation for new keys in `add_user.py`
-    [ ] migrate `open` and `close` scripts to raspi (will be called by authorized keys)
-        [ ] clean logging
     [ ] deploy script
+    [ ] modify/remove users (new keys, different names …)
+    [ ] OPT: generate key if none is given
     [ ] OPT: interactive mode for `add_user.py`
-    [ ] notimportant: modify/remove users
-    [ ] notimportant: display support
+
+#REMOTE
+
+    [ ] clean logging
+        [ ] jedes öffnen/schließen: Zeit, Serial, Name, Nick + Authorized Or Not
+        [ ] neues Deployen von Keys
+    [ ] user feedback
+    [ ] display support
+    [ ] message-queue integration
