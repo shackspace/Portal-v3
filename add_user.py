@@ -9,7 +9,7 @@ DATABASE = 'shackspacekey.sqlite'
 
 def main():
     parser = OptionParser()
-    parser.add_option('-k', 
+    parser.add_option('-k',
                       dest='keyfile',
                       help='keyfile to use')
     parser.add_option('-s',
@@ -36,7 +36,7 @@ def main():
     (options, args) = parser.parse_args()
 
     (cur, conn) = get_db()
-    
+
 
     if not options.serial:
         print('Please provide a member number')
@@ -69,8 +69,8 @@ def add_user(cur, serial, keyfile, name, surname, nickname=None, lastValid=None,
         field.append('firstValid')
         value,append(firstValid)
     field_list = ','.join(field)
-    questionmarks = ("?," * (len(field) - 1))
-    questionmarks += '?'
+    questionmarks = "?" * (len(field))
+    questionmarks = ','.join(questionmarks)
     cur.execute('INSERT INTO user(' + field_list +') VALUES (' + questionmarks + ')', value)
 
 
