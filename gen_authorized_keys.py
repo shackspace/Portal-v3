@@ -10,8 +10,7 @@ OUTFILE = 'authorized_keys'
 
 def main():
     """does the job"""
-    conn = open_database(DATABASE)
-    cur = conn.cursor()
+    cur, conn = get_db()
     dataset = get_dataset(cur)
     tasks = ['open', 'close']
 
@@ -51,12 +50,12 @@ def get_dataset(cur):
     return dataset
 
 
-def open_database(database):
+def get_db():
     """establishes connection to DB
-    returns connection"""
-    conn = sqlite3.connect(database)
-    return conn
-
+    returns cursor and connection"""
+    conn = sqlite3.connect(DATABASE)
+    cur = conn.cursor()
+    return cur, conn
 
 def gen_keyfile(dataset, task):
     """takes the data and builds a keyfile"""
@@ -65,7 +64,7 @@ def gen_keyfile(dataset, task):
 
     f = open(filename, 'w')
     security_options = "no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty"
-    command = '/var/portal' + task + '/' + task + ' '
+    command = '/var/portal/' + task + '/' + task + ' '
 
 
     for keymember in dataset:
