@@ -10,12 +10,14 @@ except RuntimeError, e:
     local = True
 import time
 import sys
+import os
+import datetime
 
 OPENPIN = 17
 CLOSEPIN = 18
 DOOR = 24
 LOGFILE = 'portal.log'
-LOCKFILE = 'portal.lock'
+LOCKFILE = '/tmp/portal.lock'
 
 def main():
     if not local:
@@ -23,8 +25,46 @@ def main():
     parser = get_option_parser()
     (options, args) = parser.parse_args()
     check_options(options)
-    open(local)
+    create_lock(options.name)
+    if options.action == 'open':
+        msg = 'Door opened by: %s (ID: %s)' % (options.name, options.serial)
+        log(msg)
+        open_portal(local)
+    if options.action == 'close':
+        msg = 'Door closed by: %s (ID: %s)' % (options.name, options.serial)
+        log(msg)
+        close_portal(local)
+    remove_lock()
+
+def log(message):
+    timestamp = datetime.datetime.now()
+    message = str(timestamp) + ':\t' + message + '\n'
+    f = open(LOGFILE, 'a')
+    f.write(message)
+    f.close()
     
+
+def remove_lock():
+    try:
+        os.remove(LOCKFILE)
+    except OSError, e:
+        log("Couldn't remove lock file: %s" % LOCKFILE)
+    
+def create_lock(name):
+    """
+    create a lockfile
+    """
+    if os.path.isfile(LOCKFILE):
+        f = open(LOCKFILE, 'r')
+        content = f.read()
+        content.strip()
+        log('Could not lock open job, locked by %s' % content)
+        sys.exit(1)
+    else:
+        f = open(LOCKFILE, 'w')
+        f.write(name)
+        f.close()
+
 
 def check_options(options):
     if not options.serial:
@@ -79,7 +119,7 @@ def setup():
     #define doorpin as input which is active high
     GPIO.setup(DOOR, GPIO.IN, GPIO.PUD_DOWN)
 
-def open(local):
+def open_portal(local):
     """
     Open the door
     """
@@ -90,7 +130,7 @@ def open(local):
     else:
         print('Opened door')
 
-def close(local):
+def close_portal(local):
     """
     close the door
     """
@@ -109,7 +149,7 @@ def close_failed():
     """
     inform user that close was unsuccessfull
     """
-    print("you're made of stupid")
+    log('close failed!') 
     #TODO: Play a sound to notify of failure
 
 
