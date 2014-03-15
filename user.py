@@ -11,8 +11,7 @@ if __name__ == '__main__':
         user_actions.list_users()
 
     elif sys.argv[1] == 'delete':
-        pass
-        #user_actions.delete_user(sys.argv[2])
+        user_actions.del_user(sys.argv[2])
 
     elif sys.argv[1] == 'add' or sys.argv[1] == 'modify':
         pass
