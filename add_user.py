@@ -97,13 +97,5 @@ def serial_exists(serial, cur):
         return True
 
 
-def open_database(database):
-    """establishes connection to DB
-    returns sqlite3 connection"""
-    conn = sqlite3.connect(database)
-    return conn
-
-
-
 if __name__ == '__main__':
     main()
