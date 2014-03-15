@@ -43,8 +43,9 @@ def main():
         name = options.name
         name = name.split(' ')
         name[0] = name[0][:3]
-        name[len(name) -1] = name[1][:1]
-        name = ' '.join(name)
+        if len(name) > 1:
+            name[len(name) -1] = name[1][:1]
+            name = ' '.join(name)
         update_keyholder(name)
 
 
