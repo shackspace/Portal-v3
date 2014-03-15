@@ -1,7 +1,6 @@
 #LOCAL
 
     [ ] deploy script
-    [ ] modify/remove users (new keys, different names …)
     [ ] OPT: generate key if none is given
     [ ] OPT: interactive mode for `add_user.py`
 
