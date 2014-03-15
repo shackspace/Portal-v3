@@ -3,6 +3,7 @@
 
 import sqlite3
 import sys
+import subprocess
 from optparse import OptionParser
 
 
@@ -46,10 +47,8 @@ def main():
         print('Please provide a keyfile')
         sys.exit(1)
 
-    key = get_key(options.keyfile)
-
-    if not is_key_valid(key):
-        print('This keyfile is invalid')
+    if not is_key_valid(options.keyfile):
+        print('Please provide a valid keyfile')
         sys.exit(1)
 
     if not options.name:
@@ -60,14 +59,15 @@ def main():
         print('Please provide a surname')
         sys.exit(1)
 
-    add_user(cur, options.serial, key, options.name, options.surname)
+    add_user(cur, options.serial, options.keyfile, options.name, \
+             options.surname)
     conn.commit()
 
 
-def add_user(cur, serial, key, name, surname, nickname=None, \
+def add_user(cur, serial, keyfile, name, surname, nickname=None, \
              lastValid=None, firstValid=None):
     field = ['serial', 'pubkey', 'name', 'surname']
-    value = [serial, key, name, surname]
+    value = [serial, get_key(keyfile), name, surname]
 
     if nickname:
         field.append('nickname')
@@ -95,6 +95,14 @@ def get_key(keyfile):
 
     key = key.strip()
     return key
+
+
+def is_key_valid(keyfile):
+    try:
+        subprocess.check_call(["ssh-keygen", "-l", "-f", str(keyfile)])
+        return True
+    except subprocess.CalledProcessError:
+        return False
 
 
 def get_db():
