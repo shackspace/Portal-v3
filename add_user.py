@@ -3,6 +3,7 @@
 
 import sqlite3
 import sys
+import subprocess
 from optparse import OptionParser
 
 
@@ -13,37 +14,41 @@ def main():
     parser = OptionParser()
     parser.add_option('-k',
                       dest='keyfile',
-                      help='keyfile to use')
+                      help='keyfile')
     parser.add_option('-s',
                       dest='serial',
-                      help='member number')
+                      help='membership number')
     parser.add_option('-n',
                       dest='name',
-                      help='members name')
+                      help='member\'s name')
     parser.add_option('-l',
                       dest='surname',
-                      help='members surname')
+                      help='member\'s surname')
     parser.add_option('--nick',
                       dest='nick',
-                      help='OPTIONAL: members nickname')
+                      help='OPTIONAL: member\'s nickname')
     parser.add_option('--first-valid',
                       dest='first',
-                      help='OPTIONAL: timestamp at which keys validity begins' +
+                      help='OPTIONAL: time at which key\'s validity begins' +
                       '(YYYYMMDD)')
     parser.add_option('--last-valid',
                       dest='last',
-                      help='OPTIONAL: timestamp at which keys validity ends' +
+                      help='OPTIONAL: time at which key\' validity ends' +
                       '(YYYYMMDD)')
 
     (options, args) = parser.parse_args()
     (cur, conn) = get_db()
 
     if not options.serial:
-        print('Please provide a member number')
+        print('Please provide a membership number')
         sys.exit(1)
 
     if not options.keyfile:
         print('Please provide a keyfile')
+        sys.exit(1)
+
+    if not is_key_valid(options.keyfile):
+        print('Please provide a valid keyfile')
         sys.exit(1)
 
     if not options.name:
@@ -55,7 +60,7 @@ def main():
         sys.exit(1)
 
     add_user(cur, options.serial, options.keyfile, options.name, \
-            options.surname)
+             options.surname)
     conn.commit()
 
 
@@ -90,6 +95,14 @@ def get_key(keyfile):
 
     key = key.strip()
     return key
+
+
+def is_key_valid(keyfile):
+    try:
+        subprocess.check_call(["ssh-keygen", "-l", "-f", str(keyfile)])
+        return True
+    except subprocess.CalledProcessError:
+        return False
 
 
 def get_db():
