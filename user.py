@@ -13,7 +13,7 @@ def main():
     elif sys.argv[1] == 'delete':
         user_actions.del_user(sys.argv[2])
 
-    elif sys.argv[1] == 'add': 
+    elif sys.argv[1] == 'add':
         parser = OptionParser()
 
         parser.add_option('-k', dest='keyfile')
@@ -23,19 +23,19 @@ def main():
         parser.add_option('--nick', dest='nick', default=None)
         parser.add_option('--first-valid', dest='first', default=None)
         parser.add_option('--last-valid', dest='last', default=None)
-    
+
         (options, args) = parser.parse_args()
         user_actions.add_user(keyfile=options.keyfile, serial=options.serial, \
                               name=options.name, surname=options.surname, \
                               nickname=options.nick, lastValid=options.last, \
                               firstValid=options.first)
-        
+
 
     elif sys.argv[1] == 'modify':
         pass
 
     else:
-        print("Usage: user.py [list | add | modify | delete]")
+        print "Usage: user.py [list | add | modify | delete]"
         sys.exit(1)
 
 if __name__ == '__main__':
@@ -47,9 +47,8 @@ if __name__ == '__main__':
                      surname TEXT, nickname TEXT, created timestamp DEFAULT \
                      CURRENT_TIMESTAMP, firstValid timestamp DEFAULT NULL, \
                      lastValid timestampt DEFAULT NULL, pubkey varchar(4096));")
-        print("New database created.")
+        print "New database created."
         conn.commit()
         conn.close()
         main()
 
-    
