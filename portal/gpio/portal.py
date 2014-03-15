@@ -18,6 +18,7 @@ CLOSEPIN = 18
 DOOR = 24
 LOGFILE = 'portal.log'
 LOCKFILE = '/tmp/portal.lock'
+STATUSFILE = '/tmp/keyholder'
 
 def main():
     if not local:
@@ -36,6 +37,17 @@ def main():
         close_portal(local)
     remove_lock()
 
+    if options.nick:
+        update_keyholder(options.nick)
+    else:
+        name = options.name
+        name = name.split(' ')
+        name[0] = name[0][:3]
+        name[len(name) -1] = name[1][:1]
+        name = ' '.join(name)
+        update_keyholder(name)
+
+
 def log(message):
     timestamp = datetime.datetime.now()
     message = str(timestamp) + ':\t' + message + '\n'
@@ -45,6 +57,9 @@ def log(message):
     
 
 def remove_lock():
+    """
+    remove the lock file
+    """
     try:
         os.remove(LOCKFILE)
     except OSError, e:
@@ -82,6 +97,13 @@ def check_options(options):
         print('Option must be open or close')
         sys.exit(1)
 
+def update_keyholder(name):
+    """
+    update the status file with the current keyholder
+    """
+    f = open(STATUSFILE, 'w')
+    f.write(name)
+    f.close()
 
 def get_option_parser():
     """
@@ -94,6 +116,9 @@ def get_option_parser():
     parser.add_option('-n', '--name',
                       dest='name',
                       help='keymembers name name_surname')
+    parser.add_option('--nick',
+                      dest='nick',
+                      help='OPT: members nickname')
     parser.add_option('-a', '--action',
                       dest='action',
                       help='open|close')
