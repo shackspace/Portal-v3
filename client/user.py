@@ -7,6 +7,9 @@ import sys
 import sqlite3
 
 def main():
+    if len(sys.argv) == 1:
+        print_usage()
+
     if sys.argv[1] == 'list':
         user_actions.list_users()
 
@@ -17,9 +20,9 @@ def main():
         parser = OptionParser()
 
         parser.add_option('-k', dest='keyfile')
-        parser.add_option('-s', dest='serial')
+        parser.add_option('-u', dest='serial')
         parser.add_option('-n', dest='name')
-        parser.add_option('-l', dest='surname')
+        parser.add_option('-s', dest='surname')
         parser.add_option('--nick', dest='nick', default=None)
         parser.add_option('--first-valid', dest='first', default=None)
         parser.add_option('--last-valid', dest='last', default=None)
@@ -35,9 +38,9 @@ def main():
         parser = OptionParser()
 
         parser.add_option('-k', dest='keyfile', default=None)
-        parser.add_option('-s', dest='serial', default=None)
+        parser.add_option('-u', dest='serial', default=None)
         parser.add_option('-n', dest='name', default=None)
-        parser.add_option('-l', dest='surname', default=None)
+        parser.add_option('-s', dest='surname', default=None)
         parser.add_option('--nick', dest='nick', default=None)
         parser.add_option('--first-valid', dest='firstValid', default=None)
         parser.add_option('--last-valid', dest='lastValid', default=None)
@@ -46,8 +49,24 @@ def main():
         user_actions.mod_user(sys.argv[2], options, args)
 
     else:
-        print "Usage: user.py [list | add | modify | delete]"
-        sys.exit(1)
+        print_usage()
+
+
+def print_usage():
+    print "Usage: user.py list\n"
+
+    print "       user.py delete <uid>\n"
+
+    print "       user.py add -u <uid> -n <name> -s <surname> [-k <keyfile>]"
+    print "                   [--nick <nickname>] [--first-valid <start date>]"
+    print "                   [--last-valid <end date, yyyy-mm-dd>]\n"
+
+    print "       user.py modify <uid> [-u <uid>] [-n <name>] [-s <surname>]"
+    print "                      [-k <keyfile>] [--nick <nickname>]"
+    print "                      [--first-valid <start date, yyyy-mm-dd>]"
+    print "                      [--last-valid <end date, yyyy-mm-dd>]"
+    sys.exit(1)
+
 
 if __name__ == '__main__':
     try:

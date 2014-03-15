@@ -54,8 +54,8 @@ def add_user(serial, keyfile, name, surname, nickname, lastValid, firstValid):
     cur, conn = db_actions.get_db()
 
     if not (serial and keyfile and name and surname):
-        print("You must provide a membership number, a name, a surname"
-                + " and a keyfile.")
+        print("You must provide a membership number (-u), a name (-n),"
+                + " a surname (-s) and a keyfile (-k).")
         sys.exit(1)
 
     if not is_key_valid(keyfile):
