@@ -3,7 +3,7 @@ import db_actions
 
 def list_users():
     cur, conn = db_actions.get_db()
-    user_list = cur.execute("SELECT serial, name, surname, nick, firstValid, \
+    user_list = cur.execute("SELECT serial, name, surname, nickname, firstValid, \
                              lastValid FROM user")
 
     output_list = [["Nr.", "First Name", "Last Name", "Nick", "Valid from", \
@@ -15,8 +15,9 @@ def list_users():
     pretty_print(output_list)
 
 
-def pretty_print(output_list)
-    col_width = [max(len(x) for x in col) for col in zip(*output_list)]
+def pretty_print(output_list):
+    print output_list
+    col_width = [max(len(str(x)) for x in col) for col in zip(*output_list)]
 
     for line in output_list:
         print "| " + " | ".join("{:{}}".format(x, col_width[i])
