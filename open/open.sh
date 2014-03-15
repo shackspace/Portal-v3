@@ -23,5 +23,6 @@ sleep 1
 gpio write 0 1
 
 
+
 echo "OPEN $rightnow ${1} ${2}" >> /var/portallog/access.log
 

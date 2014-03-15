@@ -23,9 +23,12 @@ gpio write 3 1
 
 #button
 gpio mode 4 input
+gpio mode 4 up
 
 #doorswitch
 gpio mode 5 input
+gpio mode 5 up
 
 #lockswitch
 gpio mode 6 input
+gpio mode 6 up
