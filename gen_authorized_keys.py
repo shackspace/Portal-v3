@@ -3,8 +3,10 @@
 """generate authorized_keys file from sqlite3 database"""
 import sqlite3
 
+
 DATABASE = 'shackspacekey.sqlite'
 OUTFILE = 'authorized_keys'
+
 
 def main():
     """does the job"""
@@ -12,6 +14,7 @@ def main():
     cur = conn.cursor()
     dataset = get_dataset(cur)
     tasks = ['open', 'close']
+
     for task in tasks:
         gen_keyfile(dataset, task)
 
@@ -21,9 +24,11 @@ def main():
 def get_dataset(cur):
     """pulls a dataset from the sqlite3 DB
     returns array of dict"""
+
     dataset = []
     cur.execute('SELECT * FROM user')
     ret = cur.fetchall()
+
     for r in ret:
         #check the database schema to get the order
         serial = r[0]
@@ -52,6 +57,7 @@ def open_database(database):
     conn = sqlite3.connect(database)
     return conn
 
+
 def gen_keyfile(dataset, task):
     """takes the data and builds a keyfile"""
     filename = OUTFILE
@@ -60,6 +66,7 @@ def gen_keyfile(dataset, task):
     f = open(filename, 'w')
     security_options = "no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty"
     command = '/var/portal' + task + '/' + task + ' '
+
 
     for keymember in dataset:
         parameter = []
@@ -80,6 +87,7 @@ def gen_keyfile(dataset, task):
         f.write(line)
 
     f.close()
+
 
 if __name__ == '__main__':
     main()
