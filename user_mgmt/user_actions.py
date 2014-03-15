@@ -76,6 +76,49 @@ def add_user(serial, keyfile, name, surname, nickname, lastValid, firstValid):
         print "Could not add user, user ID already in use."
 
 
+def mod_user(uid, options, args):
+    """adds a user, needs at least a serial number, name, surname and keyfile
+    writes to an sql database, fails if the database doesn't exist'"""
+    cur, conn = db_actions.get_db()
+    fields = []
+    values = []
+    options = vars(options)
+
+    for key in options.keys():
+        if options[key]:
+            fields.append(key)
+            values.append(options[key])
+
+    values.append(uid)
+
+    if len(fields) == 0:
+        print("Nothing's changed!")
+        sys.exit(0)
+
+    user = cur.execute("SELECT name, surname, nickname FROM user\
+                        WHERE serial = ?", (uid, )).fetchall()[0]
+
+    if len(user) == 0:
+        print "User not found."
+        sys.exit(1)
+
+    else:
+        change_list = [t[0] + " to " + t[1] for t in zip(fields, values)]
+        question = "Do you want to modify " + user[0] + " " + user[1]
+        question += " (nick: " + user[2] + ")" if user[2] else ""
+        question += "? [y/n]\nThe following fields will be changed: "
+        question += ", ".join(change_list) + ". "
+
+        if raw_input(question).lower() == 'y':
+            mod = "UPDATE user SET "
+            mod += ",".join(field + "= ? " for field in fields)
+            mod += " WHERE serial = ?"
+
+            cur.execute(mod, values)
+            conn.commit()
+            conn.close()
+
+
 def pretty_print(output_list):
     """prints a pretty list to stdout"""
     col_width = [max(len(str(x)) for x in col) for col in zip(*output_list)]

@@ -32,7 +32,18 @@ def main():
 
 
     elif sys.argv[1] == 'modify':
-        pass
+        parser = OptionParser()
+
+        parser.add_option('-k', dest='keyfile', default=None)
+        parser.add_option('-s', dest='serial', default=None)
+        parser.add_option('-n', dest='name', default=None)
+        parser.add_option('-l', dest='surname', default=None)
+        parser.add_option('--nick', dest='nick', default=None)
+        parser.add_option('--first-valid', dest='firstValid', default=None)
+        parser.add_option('--last-valid', dest='lastValid', default=None)
+
+        (options, args) = parser.parse_args()
+        user_actions.mod_user(sys.argv[2], options, args)
 
     else:
         print "Usage: user.py [list | add | modify | delete]"
