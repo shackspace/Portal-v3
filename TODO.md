@@ -13,5 +13,3 @@
     [ ] user feedback
     [ ] display support
     [ ] message-queue integration
-    [ ] bootstrap-script
-        [ ] pull repo, auto-pull from master
