@@ -59,8 +59,3 @@ Session.vim
 .netrwhist
 *~
 
-/keys/*
-!/keys/example.pub
-*.sqlite
-*.sql3
-authorized_keys.*
