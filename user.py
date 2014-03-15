@@ -2,11 +2,11 @@
 #-*- coding: utf-8 -*-
 
 from optparse import OptionParser
-from user_mgmt import user_actions
+from user_mgmt import user_actions, db_actions
 import sys
+import sqlite3
 
-if __name__ == '__main__':
-    
+def main():
     if sys.argv[1] == 'list':
         user_actions.list_users()
 
@@ -38,3 +38,18 @@ if __name__ == '__main__':
         print("Usage: user.py [list | add | modify | delete]")
         sys.exit(1)
 
+if __name__ == '__main__':
+    try:
+        main()
+    except sqlite3.OperationalError:
+        cur, conn = db_actions.get_db()
+        cur.execute("CREATE TABLE user(serial INTEGER PRIMARY KEY, name TEXT, \
+                     surname TEXT, nickname TEXT, created timestamp DEFAULT \
+                     CURRENT_TIMESTAMP, firstValid timestamp DEFAULT NULL, \
+                     lastValid timestampt DEFAULT NULL, pubkey varchar(4096));")
+        print("New database created.")
+        conn.commit()
+        conn.close()
+        main()
+
+    

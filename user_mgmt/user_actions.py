@@ -1,11 +1,13 @@
 import db_actions
 import subprocess
+import sys
+import sqlite3
 
 
 def list_users():
     cur, conn = db_actions.get_db()
     user_list = cur.execute("SELECT serial, name, surname, nickname, firstValid, \
-                             lastValid FROM user")
+                                 lastValid FROM user")
 
     output_list = [["Nr.", "First Name", "Last Name", "Nick", "Valid from", \
                     "Valid to"]]
@@ -63,9 +65,9 @@ def add_user(serial, keyfile, name, surname, nickname, lastValid, firstValid):
         conn.close()
         print("User successfully added.")
     
-    except:
+    except sqlite3.IntegrityError:
         conn.close()
-        print("Could not add user.")
+        print("Could not add user, user ID already in use.")
 
 
 def pretty_print(output_list):
