@@ -46,6 +46,12 @@ def main():
         print('Please provide a keyfile')
         sys.exit(1)
 
+    key = get_key(options.keyfile)
+
+    if not is_key_valid(key):
+        print('This keyfile is invalid')
+        sys.exit(1)
+
     if not options.name:
         print('Please provide a name')
         sys.exit(1)
@@ -54,15 +60,14 @@ def main():
         print('Please provide a surname')
         sys.exit(1)
 
-    add_user(cur, options.serial, options.keyfile, options.name, \
-            options.surname)
+    add_user(cur, options.serial, key, options.name, options.surname)
     conn.commit()
 
 
-def add_user(cur, serial, keyfile, name, surname, nickname=None, \
+def add_user(cur, serial, key, name, surname, nickname=None, \
              lastValid=None, firstValid=None):
     field = ['serial', 'pubkey', 'name', 'surname']
-    value = [serial, get_key(keyfile), name, surname]
+    value = [serial, key, name, surname]
 
     if nickname:
         field.append('nickname')
