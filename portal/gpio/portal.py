@@ -9,18 +9,39 @@ except RuntimeError, e:
     print("Running in local mode")
     local = True
 import time
+import sys
 
 OPENPIN = 17
 CLOSEPIN = 18
 DOOR = 24
+LOGFILE = 'portal.log'
+LOCKFILE = 'portal.lock'
 
 def main():
     if not local:
         setup()
     parser = get_option_parser()
     (options, args) = parser.parse_args()
+    check_options(options)
     open(local)
     
+
+def check_options(options):
+    if not options.serial:
+        print('Please provide a serial')
+        sys.exit(1)
+    if not options.name:
+        print('Please provide a name')
+        sys.exit(1)
+    if not options.action:
+        print('Please specify a aciton (open|close)')
+        sys.exit(1)
+
+    valid_actions = ['open', 'close']
+    if not options.action in valid_actions: 
+        print('Option must be open or close')
+        sys.exit(1)
+
 
 def get_option_parser():
     """
