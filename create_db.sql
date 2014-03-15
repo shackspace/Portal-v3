@@ -1,0 +1,1 @@
+CREATE TABLE user(serial INTEGER PRIMARY KEY, name TEXT, surname TEXT, nickname TEXT, created timestamp DEFAULT CURRENT_TIMESTAMP, firstValid timestamp DEFAULT NULL, lastValid timestampt DEFAULT NULL, pubkey varchar(4096));
