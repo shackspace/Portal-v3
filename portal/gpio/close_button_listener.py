@@ -6,7 +6,9 @@ import RPi.GPIO as GPIO
 CLOSEBUTTON = 24
 
 def main():
-    GPIO.add_event_callback(CLOSEBUTTON, callback=close_door, pull_up_down=RPIO.PUD_DOWN)
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(CLOSEBUTTON, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.add_event_callback(CLOSEBUTTON, GPIO.RISING, callback=close_door, bouncetime=20)
     GPIO.wait_for_interrupts()
 
 def close_door():
