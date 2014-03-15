@@ -1,6 +1,5 @@
 #LOCAL
 
-    [ ] key validation for new keys in `add_user.py`
     [ ] deploy script
     [ ] modify/remove users (new keys, different names …)
     [ ] OPT: generate key if none is given
