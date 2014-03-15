@@ -71,9 +71,9 @@ def add_user(serial, keyfile, name, surname, nickname, lastValid, firstValid):
         conn.close()
         print "User successfully added."
 
-    except sqlite3.IntegrityError:
+    except sqlite3.IntegrityError as err:
         conn.close()
-        print "Could not add user, user ID already in use."
+        print "Could not add user:" , err
 
 
 def mod_user(uid, options, args):
@@ -108,6 +108,10 @@ def mod_user(uid, options, args):
         question += " (nick: " + user[2] + ")" if user[2] else ""
         question += "? [y/n]\nThe following fields will be changed: "
         question += ", ".join(change_list) + ". "
+
+        if 'keyfile' in fields and not is_valid_key(options.keyfile):
+            print "This file doesn't contain a valid public key'"
+            sys.exit(1)
 
         if raw_input(question).lower() == 'y':
             mod = "UPDATE user SET "
