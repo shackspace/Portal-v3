@@ -74,7 +74,7 @@ def add_user(cur, serial, keyfile, name, surname, nickname=None, \
 
     if firstValid:
         field.append('firstValid')
-        value,append(firstValid)
+        value.append(firstValid)
 
     field_list = ','.join(field)
     questionmarks = "?" * (len(field))
