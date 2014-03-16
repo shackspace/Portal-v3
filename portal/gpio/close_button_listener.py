@@ -5,6 +5,7 @@ import RPi.GPIO as GPIO
 import subprocess
 
 CLOSEBUTTON = 24
+PORTALSCRIPTPATH = '/root/portalv3/software/portal/gpio/'
 
 def main():
     GPIO.setmode(GPIO.BCM)
@@ -19,7 +20,7 @@ def main():
     
 def close_door():
     try:
-        subprocess.Popen('./portal.py -s 0 -n button -a close')
+        subprocess.Popen(PORTALSCRIPTPATH + 'portal.py -s 0 -n button -a close')
     except subprocess.CalledProcessError, e:
         #TODO: Play a error sound!
         print("Couldn't execute close command")
