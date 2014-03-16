@@ -3,6 +3,7 @@
 
 import RPi.GPIO as GPIO
 import subprocess
+import time
 
 CLOSEBUTTON = 24
 PORTALSCRIPTPATH = '/root/portalv3/software/portal/gpio/'
@@ -19,8 +20,9 @@ def main():
 
     
 def close_door():
+    cmd = PORTALSCRIPTPATH + 'portal.py -s 0 -n button -a close'
     try:
-        subprocess.Popen(PORTALSCRIPTPATH + 'portal.py -s 0 -n button -a close')
+        subprocess.call(cmd.split())
     except subprocess.CalledProcessError, e:
         #TODO: Play a error sound!
         print("Couldn't execute close command")

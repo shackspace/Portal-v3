@@ -45,7 +45,7 @@ def main():
         name[0] = name[0][:3]
         if len(name) > 1:
             name[len(name) -1] = name[1][:1]
-            name = ' '.join(name)
+        name = ' '.join(name)
         update_keyholder(name)
 
 
