@@ -6,7 +6,6 @@ cd $(dirname $0)
 
 #create users and group
 groupadd openclose
-mkdir /
 useradd -b /home -G openclose -m open
 useradd -b /home -G openclose -m close
 
