@@ -1,0 +1,7 @@
+Connection=wireless
+Description='wlan access point'
+Interface=wlan0
+IP=static
+Address='192.168.1.1/24'
+#NETMASK='255.255.255.0'
+#SKIPNOCARRIER=yes
