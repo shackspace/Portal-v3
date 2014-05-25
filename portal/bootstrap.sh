@@ -1,35 +1,56 @@
 #!/bin/sh
 #initial bootstrapping script
 
-#cd to where the script is
-cd $(dirname $0)
 
-#create users and group
-groupadd openclose
-useradd -b /home -G openclose -m open
-useradd -b /home -G openclose -m close
+aptitude -y update
+aptitude -y install git hostapd udhcpd python-virtualenv python-dev build-essential
 
-#set permissions
-chgrp -R openclose /home/open
-chgrp -R openclose /home/close
 
-#get most recent stuff from github
-git pull
+#clone repo
+git clone https://github.com/shackspace/Portal-v3.git /opt/Portal-v3
 
-#symlink open.sh and close.sh
-ln -s ./open/open.sh /home/open/open.sh
-ln -s ./close/close.sh /home/close/close.sh
 
-#set permissions to open.sh and close.sh
-chown open:openclose /home/open/open.sh
-chown close:openclose /home/close/close.sh
-chmod 774 /home/open/open.sh
-chmod 774 /home/close/close.sh
+#link config files to /etc
+rm /etc/hostapd/hostapd.conf
+ln -s /opt/Portal-v3/portal/config/hostapd/hostapd.conf /etc/hostapd/hostapd.conf
 
-#set permissions to access.log
-touch /var/portallog/access.log
-chgrp openclose /homelog/access.log
-chmod -R 775 /var/portallog
+rm /etc/default/hostapd
+ln -s /opt/Portal-v3/portal/config/default/hostapd /etc/default/hostapd
 
-#execute GPIO-init script
-./init.sh
+rm /etc/udhcpd.conf
+ln -s /opt/Portal-v3/portal/config/udhcpd.conf /etc/udhcpd.conf
+
+rm /etc/default/udhcpd
+ln -s /opt/Portal-v3/portal/config/default/udhcpd /etc/default/udhcpd
+
+
+#restart hostapd and udhcpd
+service hostapd restart
+service udhcpd restart
+
+
+#generate env
+cd /opt/Portal-v3/portal/gpio
+virtualenv ENV
+
+
+#install requiremnts
+. ENV/bin/activate
+pip install -r requirements.txt
+
+
+#add user open
+useradd -b /home --create-home open
+mkdir /home/open/.ssh
+chown open:open /home/open/.ssh
+chmod 700 /home/open/.ssh
+
+
+#add user close
+useradd -b /home --create-home close
+mkdir /home/close/.ssh
+chown close:close /home/close/.ssh
+chmod 700 /home/close/.ssh
+
+echo open portal= NOPASSWD: /opt/Portal-v3/portal/gpio/portal.py >> /etc/sudoers
+echo close portal= NOPASSWD: /opt/Portal-v3/portal/gpio/portal.py >> /etc/sudoers
