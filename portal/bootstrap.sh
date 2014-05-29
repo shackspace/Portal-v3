@@ -23,6 +23,9 @@ ln -s /opt/Portal-v3/portal/config/udhcpd.conf /etc/udhcpd.conf
 rm /etc/default/udhcpd
 ln -s /opt/Portal-v3/portal/config/default/udhcpd /etc/default/udhcpd
 
+rm /etc/network/interfaces
+ln -s /opt/Portal-v3/portal/config/network/interfaces /etc/network/interfaces
+
 
 #restart hostapd and udhcpd
 service hostapd restart
