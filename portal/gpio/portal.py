@@ -1,5 +1,5 @@
-#!/usr/bin/env python2
-#-*- coding:utf-8 -*-
+#!/opt/Portal-v3/portal/gpio/env/bin/python
+# -*- coding:utf-8 -*-
 
 from optparse import OptionParser
 try:
@@ -15,10 +15,13 @@ import datetime
 
 OPENPIN = 17
 CLOSEPIN = 18
-DOOR = 24
+DOORPIN = 24
+BUZZERPIN = 22
+
 LOGFILE = 'portal.log'
 LOCKFILE = '/tmp/portal.lock'
 STATUSFILE = '/tmp/keyholder'
+
 
 def main():
     if not local:
@@ -44,7 +47,7 @@ def main():
         name = name.split(' ')
         name[0] = name[0][:3]
         if len(name) > 1:
-            name[len(name) -1] = name[1][:1]
+            name[len(name) - 1] = name[1][:1]
         name = ' '.join(name)
         update_keyholder(name)
 
@@ -55,7 +58,7 @@ def log(message):
     f = open(LOGFILE, 'a')
     f.write(message)
     f.close()
-    
+
 
 def remove_lock():
     """
@@ -63,9 +66,10 @@ def remove_lock():
     """
     try:
         os.remove(LOCKFILE)
-    except OSError, e:
+    except OSError:
         log("Couldn't remove lock file: %s" % LOCKFILE)
-    
+
+
 def create_lock(name):
     """
     create a lockfile
@@ -94,9 +98,10 @@ def check_options(options):
         sys.exit(1)
 
     valid_actions = ['open', 'close']
-    if not options.action in valid_actions: 
+    if options.action not in valid_actions:
         print('Option must be open or close')
         sys.exit(1)
+
 
 def update_keyholder(name):
     """
@@ -105,6 +110,7 @@ def update_keyholder(name):
     f = open(STATUSFILE, 'w')
     f.write(name)
     f.close()
+
 
 def get_option_parser():
     """
@@ -131,52 +137,81 @@ def get_option_parser():
                       help='OPT: first valid day of the key')
     return parser
 
-def setup():        
+
+def setup():
     """
     initialize GPIOs with their functions
     """
-    #define board layout
+    # define board layout
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
-    #define OPENPIN as output
+    # define OPENPIN as output
     GPIO.setup(OPENPIN, GPIO.OUT)
-    #define CLOSEPIN as output
+    # define CLOSEPIN as output
     GPIO.setup(CLOSEPIN, GPIO.OUT)
-    #define doorpin as input which is active high
-    GPIO.setup(DOOR, GPIO.IN, GPIO.PUD_DOWN)
+    # define BUZZERPIN as output
+    GPIO.setup(BUZZERPIN, GPIO.OUT)
+    # define doorpin as input which is active high
+    GPIO.setup(DOORPIN, GPIO.IN, GPIO.PUD_DOWN)
+
 
 def open_portal(local):
     """
     Open the door
     """
     if not local:
-        GPIO.output(OPENPIN, False)
+        GPIO.output(OPENPIN, GPIO.HIGH)
         time.sleep(1)
-        GPIO.output(OPENPIN, True)
+        GPIO.output(OPENPIN, GPIO.LOW)
     else:
         print('Opened door')
+
 
 def close_portal(local):
     """
     close the door
     """
-    #only close the door if it is physically closed
+    # only close the door if it is physically closed
     if not local:
-        if GPIO.input(DOOR) == 1:
-            GPIO.output(CLOSEPIN, False)
+        for second in xrange(30):
+            if second % 2 == 0:
+                GPIO.output(BUZZERPIN, GPIO.HIGH)
+            else:
+                GPIO.output(BUZZERPIN, GPIO.LOW)
+                pass
             time.sleep(1)
-            GPIO.output(CLOSEPIN, True)
-        else:
-            close_failed()
+            if GPIO.input(DOORPIN) == GPIO.HIGH:
+                for smallsec in xrange(10):
+                    if smallsec % 2 == 0:
+                        GPIO.output(BUZZERPIN, GPIO.HIGH)
+                    else:
+                        GPIO.output(BUZZERPIN, GPIO.LOW)
+                    time.sleep(0.2)
+                GPIO.output(BUZZERPIN, GPIO.LOW)
+                if GPIO.input(DOORPIN) == GPIO.LOW:
+                    continue
+                GPIO.output(CLOSEPIN, GPIO.HIGH)
+                time.sleep(1)
+                GPIO.output(CLOSEPIN, GPIO.LOW)
+                # TODO test door close status
+                break
+        else:  # executes if for loop is not left by break
+            close_timeout()
     else:
         print('Closed door')
 
-def close_failed():
+
+def close_timeout():
     """
-    inform user that close was unsuccessfull
+    inform user of timeout
     """
-    log('close failed!') 
-    #TODO: Play a sound to notify of failure
+    log('close timeout!')
+    for smallsec in xrange(8):
+        if smallsec % 2 == 0:
+            GPIO.output(BUZZERPIN, GPIO.HIGH)
+        else:
+            GPIO.output(BUZZERPIN, GPIO.LOW)
+        time.sleep(0.2)
 
 
 if __name__ == '__main__':
