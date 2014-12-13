@@ -193,9 +193,9 @@ def close_portal(local):
                 GPIO.output(CLOSEPIN, GPIO.HIGH)
                 time.sleep(1)
                 GPIO.output(CLOSEPIN, GPIO.LOW)
-                # TODO test dore close status
+                # TODO test door close status
                 break
-        else:  # executes if for loop is left by break
+        else:  # executes if for loop is not left by break
             close_timeout()
     else:
         print('Closed door')
