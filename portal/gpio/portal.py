@@ -1,31 +1,30 @@
+#!/usr/env python3
 #!/opt/Portal-v3/portal/gpio/env/bin/python
 # -*- coding:utf-8 -*-
 
 from optparse import OptionParser
-try:
-    import RPi.GPIO as GPIO
-    local = False
-except RuntimeError, e:
-    print("Running in local mode")
-    local = True
+import serial
 import time
 import sys
 import os
 import datetime
 
-OPENPIN = 17
-CLOSEPIN = 18
-DOORPIN = 24
-BUZZERPIN = 22
+KEYMATIC_OPEN_PING = 1
+KEYMATIC_CLOSE_PING = 2
+DOOR_STATE_PIN = 3
+BUZZER_PIN = 4
+CLOSEBUTTON_PIN = 10
+DOOR_STATE_OUTPUT_PIN = 11
+DOOR_LOCK_STATE_PIN = 12
 
 LOGFILE = 'portal.log'
 LOCKFILE = '/tmp/portal.lock'
 STATUSFILE = '/tmp/keyholder'
 
+SER = serial.Serial(0)
+
 
 def main():
-    if not local:
-        setup()
     parser = get_option_parser()
     (options, args) = parser.parse_args()
     check_options(options)
@@ -33,11 +32,11 @@ def main():
     if options.action == 'open':
         msg = 'Door opened by: %s (ID: %s)' % (options.name, options.serial)
         log(msg)
-        open_portal(local)
+        open_portal()
     if options.action == 'close':
         msg = 'Door closed by: %s (ID: %s)' % (options.name, options.serial)
         log(msg)
-        close_portal(local)
+        close_portal()
     remove_lock()
 
     if options.nick:
@@ -58,6 +57,23 @@ def log(message):
     f = open(LOGFILE, 'a')
     f.write(message)
     f.close()
+
+
+def set_pin(pin, state):
+    if state:
+        state = "1"
+    else:
+        state = "0"
+    SER.write(str(pin) + " " + state + "\n")
+
+
+def get_pin(pin):
+    SER.write(str(pin) + " 0\n")
+    state = SER.readline()
+    if state.strip() == 0:
+        return False
+    else:
+        return True
 
 
 def remove_lock():
@@ -138,33 +154,13 @@ def get_option_parser():
     return parser
 
 
-def setup():
-    """
-    initialize GPIOs with their functions
-    """
-    # define board layout
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
-    # define OPENPIN as output
-    GPIO.setup(OPENPIN, GPIO.OUT)
-    # define CLOSEPIN as output
-    GPIO.setup(CLOSEPIN, GPIO.OUT)
-    # define BUZZERPIN as output
-    GPIO.setup(BUZZERPIN, GPIO.OUT)
-    # define doorpin as input which is active high
-    GPIO.setup(DOORPIN, GPIO.IN, GPIO.PUD_DOWN)
-
-
-def open_portal(local):
+def open_portal():
     """
     Open the door
     """
-    if not local:
-        GPIO.output(OPENPIN, GPIO.HIGH)
-        time.sleep(1)
-        GPIO.output(OPENPIN, GPIO.LOW)
-    else:
-        print('Opened door')
+    set_pin(KEYMATIC_OPEN_PING, True)
+    time.sleep(1)
+    set_pin(KEYMATIC_OPEN_PING, False)
 
 
 def close_portal(local):
@@ -172,33 +168,29 @@ def close_portal(local):
     close the door
     """
     # only close the door if it is physically closed
-    if not local:
-        for second in xrange(30):
-            if second % 2 == 0:
-                GPIO.output(BUZZERPIN, GPIO.HIGH)
-            else:
-                GPIO.output(BUZZERPIN, GPIO.LOW)
-                pass
+    for second in xrange(30):
+        if second % 2 == 0:
+            set_pin(BUZZER_PIN, True)
+        else:
+            set_pin(BUZZER_PIN, False)
+        time.sleep(1)
+        if get_pin(DOOR_STATE_PIN):
+            for smallsec in xrange(10):
+                if smallsec % 2 == 0:
+                    set_pin(BUZZER_PIN, True)
+                else:
+                    set_pin(BUZZER_PIN, False)
+                time.sleep(0.2)
+            set_pin(BUZZER_PIN, False)
+            if not get_pin(DOOR_STATE_PIN):
+                continue
+            set_pin(KEYMATIC_CLOSE_PING, True)
             time.sleep(1)
-            if GPIO.input(DOORPIN) == GPIO.HIGH:
-                for smallsec in xrange(10):
-                    if smallsec % 2 == 0:
-                        GPIO.output(BUZZERPIN, GPIO.HIGH)
-                    else:
-                        GPIO.output(BUZZERPIN, GPIO.LOW)
-                    time.sleep(0.2)
-                GPIO.output(BUZZERPIN, GPIO.LOW)
-                if GPIO.input(DOORPIN) == GPIO.LOW:
-                    continue
-                GPIO.output(CLOSEPIN, GPIO.HIGH)
-                time.sleep(1)
-                GPIO.output(CLOSEPIN, GPIO.LOW)
-                # TODO test door close status
-                break
-        else:  # executes if for loop is not left by break
-            close_timeout()
-    else:
-        print('Closed door')
+            set_pin(KEYMATIC_CLOSE_PING, False)
+            # TODO test door close status
+            break
+    else:  # executes if for loop is not left by break
+        close_timeout()
 
 
 def close_timeout():
@@ -208,9 +200,9 @@ def close_timeout():
     log('close timeout!')
     for smallsec in xrange(8):
         if smallsec % 2 == 0:
-            GPIO.output(BUZZERPIN, GPIO.HIGH)
+            set_pin(BUZZER_PIN, True)
         else:
-            GPIO.output(BUZZERPIN, GPIO.LOW)
+            set_pin(BUZZER_PIN, False)
         time.sleep(0.2)
 
 
