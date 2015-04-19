@@ -214,17 +214,19 @@ def open_portal():
     for _ in xrange(3):
         open_keymatic()
         time.sleep(5)
-        if is_reed_open():
+        if is_reed_open(15):
             beep_success()
             return
         beep_fail()
 
 
-def is_reed_open():
+def is_reed_open(timeout=0):
+    time.sleep(timeout / 2)
     return True
 
 
-def is_reed_closed():
+def is_reed_closed(timeout=0):
+    time.sleep(timeout / 2)
     return True
     # return not is_reed_open()
 
@@ -247,7 +249,7 @@ def close_portal():
             log("door closed", 2)
             time.sleep(.5)
             close_door()
-            if is_reed_closed():
+            if is_reed_closed(15):
                 return
             else:
                 break
