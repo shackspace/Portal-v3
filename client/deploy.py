@@ -8,8 +8,8 @@ from subprocess import call
 from sys import exit
 
 AUTHORIZED_KEYS_PREFIX = "authorized_keys"
-HOMEPATH = "/var/portal"
-HOST = "portal.shack"
+HOMEPATH = "/home"
+HOST = "10.42.20.89"
 
 
 def main():
