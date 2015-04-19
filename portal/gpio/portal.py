@@ -1,5 +1,4 @@
-#!/usr/env python3
-#!/opt/Portal-v3/portal/gpio/env/bin/python
+#!/usr/bin/env python2
 # -*- coding:utf-8 -*-
 
 from optparse import OptionParser
@@ -9,19 +8,22 @@ import sys
 import os
 import datetime
 
-KEYMATIC_OPEN_PING = 1
-KEYMATIC_CLOSE_PING = 2
-DOOR_STATE_PIN = 3
+KEYMATIC_OPEN_PIN = 1
+KEYMATIC_CLOSE_PIN = 2
+DOOR_STATE_OUTPUT_PIN = 3
 BUZZER_PIN = 4
 CLOSEBUTTON_PIN = 10
-DOOR_STATE_OUTPUT_PIN = 11
+DOOR_STATE_PIN = 11
 DOOR_LOCK_STATE_PIN = 12
 
 LOGFILE = 'portal.log'
 LOCKFILE = '/tmp/portal.lock'
 STATUSFILE = '/tmp/keyholder'
+SERPORT = '/dev/ttyACM0'
+SERBAUD = 9600
+SERTIMEOUT = 1
 
-SER = serial.Serial(0)
+LOGLEVEL = 2
 
 
 def main():
@@ -33,27 +35,29 @@ def main():
         msg = 'Door opened by: %s (ID: %s)' % (options.name, options.serial)
         log(msg)
         open_portal()
+        if options.nick:
+            update_keyholder(options.nick)
+        else:
+            name = options.name
+            name = name.split(' ')
+            name[0] = name[0][:3]
+            if len(name) > 1:
+                name[len(name) - 1] = name[1][:1]
+            name = ' '.join(name)
+            update_keyholder(name)
     if options.action == 'close':
         msg = 'Door closed by: %s (ID: %s)' % (options.name, options.serial)
         log(msg)
         close_portal()
     remove_lock()
 
-    if options.nick:
-        update_keyholder(options.nick)
-    else:
-        name = options.name
-        name = name.split(' ')
-        name[0] = name[0][:3]
-        if len(name) > 1:
-            name[len(name) - 1] = name[1][:1]
-        name = ' '.join(name)
-        update_keyholder(name)
 
-
-def log(message):
+def log(message, level=1):
+    if level > LOGLEVEL:
+        return
     timestamp = datetime.datetime.now()
     message = str(timestamp) + ':\t' + message + '\n'
+    print(message)
     f = open(LOGFILE, 'a')
     f.write(message)
     f.close()
@@ -64,16 +68,57 @@ def set_pin(pin, state):
         state = "1"
     else:
         state = "0"
-    SER.write(str(pin) + " " + state + "\n")
+    #print ("set", pin, state)
+
+    for _ in xrange(10):
+        SER = serial.Serial(SERPORT, SERBAUD, timeout=SERTIMEOUT)
+        SER.write(str(pin) + " " + state + "\n")
+        ret = SER.readline()
+        SER.close()
+
+        org = ret
+        ret = ret.strip()
+        ret = ret.split()
+        if len(ret) < 2:
+            #print ("fail: set to short", pin, state, org )
+            continue
+        if not ret[0].strip() == str(pin):
+            #print ("fail: set", pin, state, org)
+            continue
+        set_state = ret[1]
+        if set_state.strip() == state:
+            #print ("set", pin, state, org)
+            return
+        else:
+            #print ("fail: set", pin, state, org)
+            continue
+    log("set failded for pin %d with state %s" %(pin, state))
+    # TODO raise
 
 
 def get_pin(pin):
-    SER.write(str(pin) + " 0\n")
-    state = SER.readline()
-    if state.strip() == 0:
-        return False
-    else:
-        return True
+    for _ in xrange(10):
+        SER = serial.Serial(SERPORT, SERBAUD, timeout=SERTIMEOUT)
+        SER.write(str(pin) + " 0\n")
+        ret = SER.readline()
+        SER.close()
+        org = ret
+        ret = ret.strip()
+        ret = ret.split()
+        if len(ret) < 2:
+            #print ("fail: get to short", pin, org )
+            continue
+        if not ret[0].strip() == str(pin):
+            #print ("fail: get", pin, org)
+            continue
+        state = ret[1]
+        if state.strip() == "0":
+            #print ("get", pin, org, state, False)
+            return False
+        else:
+            #print ("get", pin, org, state, True)
+            return True
+    log("get failded for " + str(pin))
 
 
 def remove_lock():
@@ -90,6 +135,7 @@ def create_lock(name):
     """
     create a lockfile
     """
+    # TODO write pid in lockfile
     if os.path.isfile(LOCKFILE):
         f = open(LOCKFILE, 'r')
         content = f.read()
@@ -154,56 +200,65 @@ def get_option_parser():
     return parser
 
 
+def open_keymatic():
+    print("opening keymatic")
+    set_pin(KEYMATIC_OPEN_PIN, True)
+    time.sleep(1)
+    set_pin(KEYMATIC_OPEN_PIN, False)
+
+
 def open_portal():
     """
     Open the door
     """
-    set_pin(KEYMATIC_OPEN_PING, True)
+    for _ in xrange(3):
+        open_keymatic()
+        time.sleep(5)
+        if is_reed_open():
+            beep_success()
+            return
+        beep_fail()
+
+
+def is_reed_open():
+    return True
+
+
+def is_reed_closed():
+    return True
+    #return not is_reed_open()
+
+
+def is_door_button_open():
+    return get_pin(DOOR_STATE_PIN)
+
+
+def close_door():
+    log("closing keymatic", 2)
+    set_pin(KEYMATIC_CLOSE_PIN, True)
     time.sleep(1)
-    set_pin(KEYMATIC_OPEN_PING, False)
+    set_pin(KEYMATIC_CLOSE_PIN, False)
 
 
-def close_portal(local):
-    """
-    close the door
-    """
-    # only close the door if it is physically closed
-    for second in xrange(30):
-        if second % 2 == 0:
-            set_pin(BUZZER_PIN, True)
-        else:
-            set_pin(BUZZER_PIN, False)
-        time.sleep(1)
-        if get_pin(DOOR_STATE_PIN):
-            for smallsec in xrange(10):
-                if smallsec % 2 == 0:
-                    set_pin(BUZZER_PIN, True)
-                else:
-                    set_pin(BUZZER_PIN, False)
-                time.sleep(0.2)
-            set_pin(BUZZER_PIN, False)
-            if not get_pin(DOOR_STATE_PIN):
-                continue
-            set_pin(KEYMATIC_CLOSE_PING, True)
-            time.sleep(1)
-            set_pin(KEYMATIC_CLOSE_PING, False)
-            # TODO test door close status
-            break
-    else:  # executes if for loop is not left by break
-        close_timeout()
+def close_portal():
+    for _ in xrange(30):
+        beep(.5)
+        if not is_door_button_open():
+            log("door closed", 2)
+            time.sleep(.5)
+            close_door()
+            if is_reed_closed():
+                return
+            else:
+                break
+        log("door still open", 2)
+        time.sleep(0.5)
+    alarm()
 
 
-def close_timeout():
-    """
-    inform user of timeout
-    """
-    log('close timeout!')
-    for smallsec in xrange(8):
-        if smallsec % 2 == 0:
-            set_pin(BUZZER_PIN, True)
-        else:
-            set_pin(BUZZER_PIN, False)
-        time.sleep(0.2)
+def alarm():
+    log("door close failed")
+    beep_alarm()
 
 
 if __name__ == '__main__':
