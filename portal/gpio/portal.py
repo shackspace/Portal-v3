@@ -68,7 +68,7 @@ def set_pin(pin, state):
         state = "1"
     else:
         state = "0"
-    #print ("set", pin, state)
+    # print ("set", pin, state)
 
     for _ in xrange(10):
         SER = serial.Serial(SERPORT, SERBAUD, timeout=SERTIMEOUT)
@@ -76,23 +76,23 @@ def set_pin(pin, state):
         ret = SER.readline()
         SER.close()
 
-        org = ret
+        # org = ret
         ret = ret.strip()
         ret = ret.split()
         if len(ret) < 2:
-            #print ("fail: set to short", pin, state, org )
+            # print ("fail: set to short", pin, state, org )
             continue
         if not ret[0].strip() == str(pin):
-            #print ("fail: set", pin, state, org)
+            # print ("fail: set", pin, state, org)
             continue
         set_state = ret[1]
         if set_state.strip() == state:
-            #print ("set", pin, state, org)
+            # print ("set", pin, state, org)
             return
         else:
-            #print ("fail: set", pin, state, org)
+            # print ("fail: set", pin, state, org)
             continue
-    log("set failded for pin %d with state %s" %(pin, state))
+    log("set failded for pin %d with state %s" % (pin, state))
     # TODO raise
 
 
@@ -102,21 +102,21 @@ def get_pin(pin):
         SER.write(str(pin) + " 0\n")
         ret = SER.readline()
         SER.close()
-        org = ret
+        # org = ret
         ret = ret.strip()
         ret = ret.split()
         if len(ret) < 2:
-            #print ("fail: get to short", pin, org )
+            # print ("fail: get to short", pin, org )
             continue
         if not ret[0].strip() == str(pin):
-            #print ("fail: get", pin, org)
+            # print ("fail: get", pin, org)
             continue
         state = ret[1]
         if state.strip() == "0":
-            #print ("get", pin, org, state, False)
+            # print ("get", pin, org, state, False)
             return False
         else:
-            #print ("get", pin, org, state, True)
+            # print ("get", pin, org, state, True)
             return True
     log("get failded for " + str(pin))
 
@@ -226,7 +226,7 @@ def is_reed_open():
 
 def is_reed_closed():
     return True
-    #return not is_reed_open()
+    # return not is_reed_open()
 
 
 def is_door_button_open():
@@ -260,6 +260,27 @@ def alarm():
     log("door close failed")
     beep_alarm()
 
+
+def beep(duration=0.2):
+    set_pin(BUZZER_PIN, True)
+    time.sleep(duration)
+    set_pin(BUZZER_PIN, False)
+
+
+def beep_alarm():
+    for _ in xrange(30):
+        beep(0.1)
+        time.sleep(0.1)
+
+
+def beep_success():
+    for _ in xrange(2):
+        beep(0.2)
+        time.sleep(0.2)
+
+
+def beep_fail():
+    beep(1)
 
 if __name__ == '__main__':
     main()
