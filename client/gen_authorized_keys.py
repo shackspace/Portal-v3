@@ -2,6 +2,7 @@
 #-*- coding: utf-8 -*-
 """generate authorized_keys file from sqlite3 database"""
 import sqlite3
+from  datetime import date, datetime
 
 
 DATABASE = 'shackspacekey.sqlite'
@@ -57,22 +58,50 @@ def get_db():
     cur = conn.cursor()
     return cur, conn
 
+
 def gen_keyfile(dataset, task):
     """takes the data and builds a keyfile"""
     filename = OUTFILE
     filename += '.' + task
 
     f = open(filename, 'w')
-    security_options = "no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty"
-    command = '/var/portal/' + task + '/' + task + ' '
-
+    security_options = ["no-port-forwarding",
+                        "no-X11-forwarding",
+                        "no-agent-forwarding",
+                        "no-pty"]
+    security_options = ','.join(security_options)
+    command = '/opt/Portal-v3/portal/gpio/portal.py'
 
     for keymember in dataset:
         parameter = []
+        parameter.append("-a")
+        parameter.append(task)
         parameter.append("-s")
         parameter.append(str(keymember["serial"]))
         parameter.append("-n")
-        parameter.append(keymember["name"] + "_" + keymember["surname"])
+        name = ' '.join([keymember["name"], keymember["surname"]])
+        name = name.strip()
+        parameter.append('\\"' + name + '\\"')
+        if keymember["lastValid"]:
+            parameter.append("-l")
+            parameter.append(keymember["lastValid"].split()[0])
+            print keymember["lastValid"]
+            lastValid = datetime.strptime(keymember["lastValid"], "%Y-%m-%d")
+            lastValid = lastValid.date()
+            if lastValid < date.today():
+                continue
+            print lastValid
+        if keymember["firstValid"]:
+            parameter.append("-f")
+            parameter.append(keymember["firstValid"].split()[0])
+        # if keymember["created"]:
+        #     parameter.append("-c")
+        #     parameter.append(keymember["created"].split()[0])
+        if keymember["nickname"]:
+            nickname = keymember["nickname"]
+            nickname = nickname.strip()
+            parameter.append("--nick")
+            parameter.append('\\"' + nickname +'\\"')
 
         parameterlist = ' '.join(parameter)
 
