@@ -9,7 +9,7 @@ from sys import exit
 
 AUTHORIZED_KEYS_PREFIX = "authorized_keys"
 HOMEPATH = "/home"
-HOST = "10.42.20.89"
+HOST = "portal.portal"
 
 
 def main():
