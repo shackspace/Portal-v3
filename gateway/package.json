@@ -1,0 +1,17 @@
+{
+  "name": "portal-gateway",
+  "version": "0.0.1",
+  "description": "portal gateway",
+  "main": "bin/server.js",
+  "scripts": {
+    "start": "node bin/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.12.3",
+    "coffee-script": "^1.9.2",
+    "express": "^4.12.3",
+    "log4js": "^0.6.24"
+  }
+}
