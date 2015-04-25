@@ -225,7 +225,7 @@ def is_reed_open(timeout=0):
     status = get_pin(DOOR_LOCK_STATE_PIN)
     for _ in xrange(timeout):
         status = get_pin(DOOR_LOCK_STATE_PIN)
-        log("door lock status: " + status, 2)
+        log("door lock status: " + str(status), 2)
         if status:
             return True
         time.sleep(1)
@@ -237,7 +237,7 @@ def is_reed_closed(timeout=0):
     status = get_pin(DOOR_LOCK_STATE_PIN)
     for _ in xrange(timeout):
         status = get_pin(DOOR_LOCK_STATE_PIN)
-        log("door lock status: " + status, 2)
+        log("door lock status: " + str(status), 2)
         if not status:
             return True
         time.sleep(1)
