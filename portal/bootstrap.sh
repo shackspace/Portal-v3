@@ -57,5 +57,8 @@ mkdir /home/close/.ssh
 chown close:close /home/close/.ssh
 chmod 700 /home/close/.ssh
 
+#install push crontab
+crontab -l | { cat; echo "* * * * * /opt/Portal-v3/portal/gpio/send.sh"; } | crontab -
+
 #echo open portal= NOPASSWD: /opt/Portal-v3/portal/gpio/portal.py >> /etc/sudoers
 #echo close portal= NOPASSWD: /opt/Portal-v3/portal/gpio/portal.py >> /etc/sudoers
