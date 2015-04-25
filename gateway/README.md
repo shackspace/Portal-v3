@@ -18,6 +18,6 @@ POST /push
 
 ### curl example
 
-curl -XPOST -d '{"status":"open", "nick": "root"}' 'http://10.42.irgendwas/push'
+curl -XPOST -d '{"status":"open", "nick": "root"}' 'http://10.0.2.10/push'
 
 ## Public-facing API
