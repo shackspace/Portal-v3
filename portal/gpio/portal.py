@@ -27,6 +27,7 @@ LOGLEVEL = 2
 
 
 def main():
+    beep(0.1)
     parser = get_option_parser()
     (options, args) = parser.parse_args()
     check_options(options)
@@ -250,6 +251,7 @@ def close_portal():
             time.sleep(.5)
             close_door()
             if is_reed_closed(15):
+                beep_success()
                 return
             else:
                 break
