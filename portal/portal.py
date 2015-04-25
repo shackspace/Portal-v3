@@ -222,14 +222,25 @@ def open_portal():
 
 
 def is_reed_open(timeout=0):
-    time.sleep(timeout / 2)
-    return True
+    status = False
+    for _ in xrange(timeout):
+        status = get_pin(12)
+        if status:
+            return True
+        time.sleep(1)
+
+    return False
 
 
 def is_reed_closed(timeout=0):
-    time.sleep(timeout / 2)
-    return True
-    # return not is_reed_open()
+    status = True
+    for _ in xrange(timeout):
+        status = get_pin(12)
+        if not status:
+            return True
+        time.sleep(1)
+
+    return False
 
 
 def is_door_button_open():
