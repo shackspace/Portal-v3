@@ -3,10 +3,13 @@
 class Status
 	constructor: ->
 		@_status = 'closed'
-		@_nick = ''
+		@_keyholder = ''
 
-	set: (status, nick) =>
+	set: (status, keyholder) =>
 		@_status = status
-		@_nick = nick
+		@_keyholder = keyholder
+
+
+	get: => {status: @_status, keyholder: @_keyholder}
 
 module.exports = new Status()

@@ -13,11 +13,11 @@ On the second NIC the gateway provides a http api for querying the status of the
 POST /push
 {
 	status: 'closed' or 'open',
-	nick: nickname
+	keyholder: nickname
 }
 
 ### curl example
 
-curl -XPOST -d '{"status":"open", "nick": "root"}' -H "Content-type: application/json" 'http://10.42.irgendwas/push'
+curl -XPOST -d '{"status":"open", "keyholder": "root"}' -H "Content-type: application/json" 'http://10.42.irgendwas/push'
 
 ## Public-facing API
