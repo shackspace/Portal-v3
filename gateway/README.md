@@ -30,3 +30,12 @@ returns
 	status: 'closed' or 'open',
 	keyholder: nickname
 }
+
+## Installation
+
+- Install node
+- `npm install` in this directory
+
+## Execution
+
+`npm start`
