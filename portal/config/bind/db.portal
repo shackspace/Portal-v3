@@ -1,0 +1,12 @@
+$TTL    86400
+portal.                          IN      SOA     portal.portal. key.lists.shackspace.de. (
+                                        2015042501; Serial
+                                        604800; Refresh
+                                        86400; Retry
+                                        2419200; Expire
+                                        604800 ); Negative Cache TTL
+;
+                                IN      NS      portal.portal.
+
+portal                          IN      A       192.168.1.1
+
