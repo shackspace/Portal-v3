@@ -12,13 +12,30 @@ On the second NIC the gateway provides a http api for querying the status of the
 
 POST /push
 {
-	status: 'close' or 'open',
-	nick: nickname
+	status: 'closed' or 'open',
+	keyholder: nickname
 }
 
 ### curl example
 
-curl -XPOST -d '{"status":"open", "nick": "root"}' 'http://10.0.2.10/push'
+curl -XPOST -d '{"status":"open", "nick": "root"}' -H "Content-type:application/json" 'http://10.0.2.10/push'
+
 
 ## Public-facing API
 
+GET /status
+
+returns
+{
+	status: 'closed' or 'open',
+	keyholder: nickname
+}
+
+## Installation
+
+- Install node
+- `npm install` in this directory
+
+## Execution
+
+`npm start`
