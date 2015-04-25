@@ -24,4 +24,4 @@ server = app.listen config.portalApiPort, config.portalApiHost, ->
 	host = server.address().address
 	port = server.address().port
 
-	log.info 'Example app listening at http://%s:%s', host, port
+	log.info 'Portal API listening at http://%s:%s', host, port

@@ -9,7 +9,6 @@ class Status
 		@_status = status
 		@_keyholder = keyholder
 
-
 	get: => {status: @_status, keyholder: @_keyholder}
 
 module.exports = new Status()

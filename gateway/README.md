@@ -21,3 +21,11 @@ POST /push
 curl -XPOST -d '{"status":"open", "keyholder": "root"}' -H "Content-type: application/json" 'http://10.42.irgendwas/push'
 
 ## Public-facing API
+
+GET /status
+
+returns
+{
+	status: 'closed' or 'open',
+	keyholder: nickname
+}
