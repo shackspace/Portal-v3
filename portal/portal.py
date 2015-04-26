@@ -17,8 +17,8 @@ DOOR_STATE_PIN = 11
 DOOR_LOCK_STATE_PIN = 12
 
 LOGFILE = 'portal.log'
-LOCKFILE = '/tmp/portal.lock'
-STATUSFILE = '/tmp/keyholder'
+LOCKFILE = '/var/run/portal/portal.lock'
+STATUSFILE = '/var/run/portal/keyholder'
 SERPORT = '/dev/ttyACM0'
 SERBAUD = 9600
 SERTIMEOUT = 1
@@ -132,20 +132,35 @@ def remove_lock():
         log("Couldn't remove lock file: %s" % LOCKFILE)
 
 
+def lockpid_running(pid):
+    """
+    check if pid is running
+    """
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    else:
+        return True
+
+
 def create_lock(name):
     """
     create a lockfile
     """
-    # TODO write pid in lockfile
     if os.path.isfile(LOCKFILE):
         f = open(LOCKFILE, 'r')
         content = f.read()
         content.strip()
-        log('Could not lock open job, locked by %s' % content)
-        sys.exit(1)
+        if lockpid_running(content):
+            log('Could not lock open job, locked by %s' % content)
+            sys.exit(1)
+        else:
+            log("Removing lockfile as %s isn't running anymore" % content, 2)
+            remove_lock()
     else:
         f = open(LOCKFILE, 'w')
-        f.write(name)
+        f.write(os.getpid())
         f.close()
 
 
