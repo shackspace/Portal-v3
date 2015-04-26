@@ -1,6 +1,6 @@
 #!/bin/bash
 
-KEYHOLDER=$(cat /tmp/keyholder)
+KEYHOLDER=$(cat /var/run/portal/keyholder)
 STATUS='closed'
 ADDRESS='http://10.0.2.10:8080/push'
 
