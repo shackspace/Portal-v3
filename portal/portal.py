@@ -6,6 +6,8 @@ import serial
 import time
 import sys
 import os
+import grp
+import pwd
 import datetime
 
 KEYMATIC_OPEN_PIN = 1
@@ -187,6 +189,9 @@ def update_keyholder(name):
     f = open(STATUSFILE, 'w')
     f.write(name)
     f.close()
+    gid = grp.getgrnam("portal").gr_gid
+    uid = uid = pwd.getpwnam("open").pw_uid
+    os.chown(STATUSFILE, uid, gid)
 
 
 def get_option_parser():
