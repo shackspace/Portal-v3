@@ -72,11 +72,11 @@ if __name__ == '__main__':
     try:
         main()
     except sqlite3.OperationalError:
+        with open('create_db.sql', 'r') as f:
+            schema = f.readline()
+            schema = schema.strip()
         cur, conn = db_actions.get_db()
-        cur.execute("CREATE TABLE user(serial INTEGER PRIMARY KEY, name TEXT, \
-                     surname TEXT, nickname TEXT, created timestamp DEFAULT \
-                     CURRENT_TIMESTAMP, firstValid timestamp DEFAULT NULL, \
-                     lastValid timestampt DEFAULT NULL, pubkey varchar(4096));")
+        cur.execute(schema)
         print "New database created."
         conn.commit()
         conn.close()
