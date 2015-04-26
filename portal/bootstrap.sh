@@ -35,16 +35,6 @@ service hostapd restart
 service udhcpd restart
 service bind9 restart
 
-
-#generate env
-cd /opt/Portal-v3/portal/gpio
-virtualenv ENV
-
-
-#install requiremnts
-. ENV/bin/activate
-pip install -r requirements.txt
-
 #add group portal
 groupadd portal
 
@@ -61,6 +51,12 @@ mkdir /home/close/.ssh
 chown close:close /home/close/.ssh
 chmod 700 /home/close/.ssh
 gpasswd -a close portal
+
+#add logging
+mkdir -p /var/log/portal/
+touch /var/log/portal/portal.log
+chgrp -R portal /var/log/portal
+chmod -R g+rw portal /var/log/portal
 
 #install push crontab
 crontab -l | { cat; echo "* * * * * /opt/Portal-v3/portal/gpio/send.sh"; } | crontab -
