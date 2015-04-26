@@ -2,13 +2,12 @@
 Description=HTTP gateway between portal and publich
 
 [Service]
-ExecStart=node /opt/Portal-v3/gateway/bin/server.js
+ExecStart=/usr/bin/node /opt/Portal-v3/gateway/bin/server.js
 Restart=always
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=gateway
 User=portal
-Group=portal
 Environment=NODE_ENV=production
 
 [Install]
