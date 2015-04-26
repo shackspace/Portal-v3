@@ -28,6 +28,8 @@ ln -sf /opt/Portal-v3/portal/config/bind/named.conf.local /etc/bind/named.conf.l
 
 ln -sf /opt/Portal-v3/portal/config/bind/db.portal /etc/bind/db.portal
 
+ln -sf /opt/Portal-v3/portal/config/rc.local /etc/rc.local
+
 #restart hostapd and udhcpd
 service hostapd restart
 service udhcpd restart
@@ -43,19 +45,22 @@ virtualenv ENV
 . ENV/bin/activate
 pip install -r requirements.txt
 
+#add group portal
+groupadd portal
 
 #add user open
 useradd -b /home --create-home -G dialout open
 mkdir /home/open/.ssh
 chown open:open /home/open/.ssh
 chmod 700 /home/open/.ssh
-
+gpasswd -a open portal
 
 #add user close
 useradd -b /home --create-home -G dialout close
 mkdir /home/close/.ssh
 chown close:close /home/close/.ssh
 chmod 700 /home/close/.ssh
+gpasswd -a close portal
 
 #install push crontab
 crontab -l | { cat; echo "* * * * * /opt/Portal-v3/portal/gpio/send.sh"; } | crontab -
