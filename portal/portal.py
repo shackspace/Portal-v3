@@ -158,10 +158,9 @@ def create_lock(name):
         else:
             log("Removing lockfile as %s isn't running anymore" % content, 2)
             remove_lock()
-    else:
-        f = open(LOCKFILE, 'w')
-        f.write(os.getpid())
-        f.close()
+    f = open(LOCKFILE, 'w')
+    f.write(os.getpid())
+    f.close()
 
 
 def check_options(options):
