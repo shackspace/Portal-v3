@@ -137,7 +137,7 @@ def lockpid_running(pid):
     check if pid is running
     """
     try:
-        os.kill(pid, 0)
+        os.kill(int(pid), 0)
     except OSError:
         return False
     else:
@@ -159,7 +159,7 @@ def create_lock(name):
             log("Removing lockfile as %s isn't running anymore" % content, 2)
             remove_lock()
     f = open(LOCKFILE, 'w')
-    f.write(os.getpid())
+    f.write(str(os.getpid()))
     f.close()
 
 
