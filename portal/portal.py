@@ -18,9 +18,9 @@ CLOSEBUTTON_PIN = 10
 DOOR_STATE_PIN = 11
 DOOR_LOCK_STATE_PIN = 12
 
-LOGFILE = 'portal.log'
-LOCKFILE = '/var/run/portal/portal.lock'
-STATUSFILE = '/var/run/portal/keyholder'
+LOGFILE = '/var/log/portal/portal.log'
+LOCKFILE = '/var/run/lock/portal.lock'
+STATUSFILE = '/var/log/portal/keyholder'
 SERPORT = '/dev/ttyACM0'
 SERBAUD = 9600
 SERTIMEOUT = 1
