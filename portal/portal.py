@@ -30,6 +30,7 @@ LOGLEVEL = 2
 
 def main():
     beep(0.1)
+    motd()
     parser = get_option_parser()
     (options, args) = parser.parse_args()
     check_options(options)
@@ -53,6 +54,12 @@ def main():
         log(msg)
         close_portal()
     remove_lock()
+
+
+def motd():
+    with open('motd.txt', 'r') as f:
+        for line in f.readlines():
+            print(line)
 
 
 def log(message, level=1):
