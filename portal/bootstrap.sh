@@ -59,7 +59,7 @@ chgrp -R portal /var/log/portal
 chmod -R g+rw portal /var/log/portal
 
 #install push crontab
-crontab -l | { cat; echo "* * * * * /opt/Portal-v3/portal/gpio/send.sh"; } | crontab -
+crontab -l | { cat; echo "* * * * * /opt/Portal-v3/portal/gpio/send.sh >/dev/null 2>&1"; } | crontab -
 
 #echo open portal= NOPASSWD: /opt/Portal-v3/portal/gpio/portal.py >> /etc/sudoers
 #echo close portal= NOPASSWD: /opt/Portal-v3/portal/gpio/portal.py >> /etc/sudoers
