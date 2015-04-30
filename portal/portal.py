@@ -57,7 +57,7 @@ def main():
 
 
 def motd():
-    with open('motd.txt', 'r') as f:
+    with open('/opt/Portal-v3/portal/motd.txt', 'r') as f:
         for line in f.readlines():
             print(line)
 
