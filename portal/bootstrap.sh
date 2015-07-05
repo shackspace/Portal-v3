@@ -30,6 +30,12 @@ ln -sf /opt/Portal-v3/portal/config/bind/db.portal /etc/bind/db.portal
 
 ln -sf /opt/Portal-v3/portal/config/rc.local /etc/rc.local
 
+ln -sf /opt/Portal-v3/portal/config/ntp.conf /etc/ntp.conf
+
+ln -sf /opt/Portal-v3/portal/config/cron.d/portal /etc/cron.d/portal
+
+ln -sf /opt/Portal-v3/portal/config/ssh/sshd_config /etc/ssh/sshd_config
+
 #restart hostapd and udhcpd
 service hostapd restart
 service udhcpd restart
@@ -54,12 +60,8 @@ gpasswd -a close portal
 
 #add logging
 mkdir -p /var/log/portal/
+touch /var/log/portal/keyholder
 touch /var/log/portal/portal.log
 chgrp -R portal /var/log/portal
 chmod -R g+rw portal /var/log/portal
 
-#install push crontab
-crontab -l | { cat; echo "* * * * * /opt/Portal-v3/portal/gpio/send.sh >/dev/null 2>&1"; } | crontab -
-
-#echo open portal= NOPASSWD: /opt/Portal-v3/portal/gpio/portal.py >> /etc/sudoers
-#echo close portal= NOPASSWD: /opt/Portal-v3/portal/gpio/portal.py >> /etc/sudoers
