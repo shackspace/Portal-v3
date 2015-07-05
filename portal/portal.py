@@ -59,17 +59,17 @@ def main():
 def motd():
     with open('/opt/Portal-v3/portal/motd.txt', 'r') as f:
         for line in f.readlines():
-            print(line)
+            print line,
 
 
 def log(message, level=1):
     if level > LOGLEVEL:
         return
     timestamp = datetime.datetime.now()
-    message = str(timestamp) + ':\t' + message + '\n'
+    message = str(timestamp) + ':\t' + message
     print(message)
     f = open(LOGFILE, 'a')
-    f.write(message)
+    f.write(message + "\n")
     f.close()
 
 
