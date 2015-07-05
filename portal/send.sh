@@ -13,4 +13,4 @@ elif [ $RET -eq -1 ]; then
     STATUS='unknown';
 fi;
 
-curl -X POST -d '{"status":"'$STATUS'", "keyholder": "'$KEYHOLDER'"}' -H "Content-type: application/json" $ADDRESS
+curl -s -X POST -d '{"status":"'$STATUS'", "keyholder": "'$KEYHOLDER'"}' -H "Content-type: application/json" $ADDRESS
