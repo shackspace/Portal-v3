@@ -5,6 +5,7 @@ const int beeper = 15;
 const int closebutton = 9;
 const int doorcontact = 8;
 const int reedcontact = 7;
+int closing_requested = 0;
 
 void setup()
 {
@@ -27,6 +28,10 @@ void loop()
   if(Serial.read() == '\n')
   {
     parseCMD(comm1, comm2);
+  }
+  if(digitalRead(closebutton))
+  {
+    closing_requested = 1;
   }
 }
 
@@ -97,7 +102,17 @@ void parseCMD(int comm1, int comm2)
     case 12:
       Serial.println(digitalRead(reedcontact));
       break;
-
+    case 20:
+      switch(comm2)
+      {
+        case 0:
+          Serial.println(closing_requested);
+          break;
+        case 1:
+          closing_requested = 0;
+          break;
+      }
+      break;
   }
 }
           
