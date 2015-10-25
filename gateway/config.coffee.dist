@@ -3,4 +3,4 @@ module.exports =
 	portalApiPort: 8080
 
 	publicApiHost: 'localhost'
-	publichApiPort: 8888
+	publicApiPort: 8888

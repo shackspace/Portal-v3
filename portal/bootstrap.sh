@@ -28,34 +28,40 @@ ln -sf /opt/Portal-v3/portal/config/bind/named.conf.local /etc/bind/named.conf.l
 
 ln -sf /opt/Portal-v3/portal/config/bind/db.portal /etc/bind/db.portal
 
+ln -sf /opt/Portal-v3/portal/config/rc.local /etc/rc.local
+
+ln -sf /opt/Portal-v3/portal/config/ntp.conf /etc/ntp.conf
+
+ln -sf /opt/Portal-v3/portal/config/cron.d/portal /etc/cron.d/portal
+
+ln -sf /opt/Portal-v3/portal/config/ssh/sshd_config /etc/ssh/sshd_config
+
 #restart hostapd and udhcpd
 service hostapd restart
 service udhcpd restart
 service bind9 restart
 
-
-#generate env
-cd /opt/Portal-v3/portal/gpio
-virtualenv ENV
-
-
-#install requiremnts
-. ENV/bin/activate
-pip install -r requirements.txt
-
+#add group portal
+groupadd portal
 
 #add user open
 useradd -b /home --create-home -G dialout open
 mkdir /home/open/.ssh
 chown open:open /home/open/.ssh
 chmod 700 /home/open/.ssh
-
+gpasswd -a open portal
 
 #add user close
 useradd -b /home --create-home -G dialout close
 mkdir /home/close/.ssh
 chown close:close /home/close/.ssh
 chmod 700 /home/close/.ssh
+gpasswd -a close portal
 
-#echo open portal= NOPASSWD: /opt/Portal-v3/portal/gpio/portal.py >> /etc/sudoers
-#echo close portal= NOPASSWD: /opt/Portal-v3/portal/gpio/portal.py >> /etc/sudoers
+#add logging
+mkdir -p /var/log/portal/
+touch /var/log/portal/keyholder
+touch /var/log/portal/portal.log
+chgrp -R portal /var/log/portal
+chmod -R g+rw portal /var/log/portal
+

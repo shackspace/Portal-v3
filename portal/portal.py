@@ -6,6 +6,8 @@ import serial
 import time
 import sys
 import os
+import grp
+import pwd
 import datetime
 
 KEYMATIC_OPEN_PIN = 1
@@ -16,9 +18,9 @@ CLOSEBUTTON_PIN = 10
 DOOR_STATE_PIN = 11
 DOOR_LOCK_STATE_PIN = 12
 
-LOGFILE = 'portal.log'
-LOCKFILE = '/tmp/portal.lock'
-STATUSFILE = '/tmp/keyholder'
+LOGFILE = '/var/log/portal/portal.log'
+LOCKFILE = '/var/run/lock/portal.lock'
+STATUSFILE = '/var/log/portal/keyholder'
 SERPORT = '/dev/ttyACM0'
 SERBAUD = 9600
 SERTIMEOUT = 1
@@ -28,6 +30,7 @@ LOGLEVEL = 2
 
 def main():
     beep(0.1)
+    motd()
     parser = get_option_parser()
     (options, args) = parser.parse_args()
     check_options(options)
@@ -53,14 +56,20 @@ def main():
     remove_lock()
 
 
+def motd():
+    with open('/opt/Portal-v3/portal/motd.txt', 'r') as f:
+        for line in f.readlines():
+            print line,
+
+
 def log(message, level=1):
     if level > LOGLEVEL:
         return
     timestamp = datetime.datetime.now()
-    message = str(timestamp) + ':\t' + message + '\n'
+    message = str(timestamp) + ':\t' + message
     print(message)
     f = open(LOGFILE, 'a')
-    f.write(message)
+    f.write(message + "\n")
     f.close()
 
 
@@ -132,21 +141,35 @@ def remove_lock():
         log("Couldn't remove lock file: %s" % LOCKFILE)
 
 
+def lockpid_running(pid):
+    """
+    check if pid is running
+    """
+    try:
+        os.kill(int(pid), 0)
+    except OSError:
+        return False
+    else:
+        return True
+
+
 def create_lock(name):
     """
     create a lockfile
     """
-    # TODO write pid in lockfile
     if os.path.isfile(LOCKFILE):
         f = open(LOCKFILE, 'r')
         content = f.read()
         content.strip()
-        log('Could not lock open job, locked by %s' % content)
-        sys.exit(1)
-    else:
-        f = open(LOCKFILE, 'w')
-        f.write(name)
-        f.close()
+        if lockpid_running(content):
+            log('Could not lock open job, locked by %s' % content)
+            sys.exit(1)
+        else:
+            log("Removing lockfile as %s isn't running anymore" % content, 2)
+            remove_lock()
+    f = open(LOCKFILE, 'w')
+    f.write(str(os.getpid()))
+    f.close()
 
 
 def check_options(options):
@@ -173,6 +196,9 @@ def update_keyholder(name):
     f = open(STATUSFILE, 'w')
     f.write(name)
     f.close()
+    gid = grp.getgrnam("portal").gr_gid
+    uid = uid = pwd.getpwnam("open").pw_uid
+    os.chown(STATUSFILE, uid, gid)
 
 
 def get_option_parser():
@@ -222,14 +248,27 @@ def open_portal():
 
 
 def is_reed_open(timeout=0):
-    time.sleep(timeout / 2)
-    return True
+    status = get_pin(DOOR_LOCK_STATE_PIN)
+    for _ in xrange(timeout):
+        status = get_pin(DOOR_LOCK_STATE_PIN)
+        log("door lock status: " + str(status), 2)
+        if status:
+            return True
+        time.sleep(1)
+
+    return status
 
 
 def is_reed_closed(timeout=0):
-    time.sleep(timeout / 2)
-    return True
-    # return not is_reed_open()
+    status = get_pin(DOOR_LOCK_STATE_PIN)
+    for _ in xrange(timeout):
+        status = get_pin(DOOR_LOCK_STATE_PIN)
+        log("door lock status: " + str(status), 2)
+        if not status:
+            return True
+        time.sleep(1)
+
+    return status
 
 
 def is_door_button_open():

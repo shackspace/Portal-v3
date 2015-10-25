@@ -1,0 +1,2 @@
+* *  * * *  root /opt/Portal-v3/portal/watchdog.sh
+* *  * * *  root /opt/Portal-v3/portal/send.sh > /dev/null

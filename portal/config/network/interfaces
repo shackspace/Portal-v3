@@ -4,12 +4,13 @@ iface lo inet loopback
 iface eth0 inet static
 	address 10.0.2.11
 	netmask 255.255.255.0
+    gateway 10.0.2.10
 
 iface default inet dhcp
 
 #allow-hotplug wlan0
 #iface wlan0 inet manual
 iface wlan0 inet static
-  address 192.168.1.1
+  address 172.16.0.1
   netmask 255.255.255.0
 #wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf

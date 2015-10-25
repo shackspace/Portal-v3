@@ -31,3 +31,13 @@ returns
 	status: 'closed' or 'open',
 	keyholder: nickname
 }
+
+## Installation
+
+- Install node
+- `npm install` in this directory
+- copy config.coffee.dist to config.coffee and edit accordingly
+
+## Execution
+
+`npm start`

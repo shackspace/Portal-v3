@@ -67,10 +67,9 @@ def gen_keyfile(dataset, task):
     f = open(filename, 'w')
     security_options = ["no-port-forwarding",
                         "no-X11-forwarding",
-                        "no-agent-forwarding",
-                        "no-pty"]
+                        "no-agent-forwarding"]
     security_options = ','.join(security_options)
-    command = '/opt/Portal-v3/portal/gpio/portal.py'
+    command = '/opt/Portal-v3/portal/portal.py'
 
     for keymember in dataset:
         parameter = []
