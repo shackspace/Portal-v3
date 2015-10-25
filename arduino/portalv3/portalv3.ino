@@ -44,11 +44,11 @@ void parseCMD(int comm1, int comm2)
       {
         case 0:
           digitalWrite(keymatic_open, LOW);
-          Serial.println('0');
+          Serial.println("1 0");
           break;
         case 1:
           digitalWrite(keymatic_open, HIGH);
-          Serial.println('1');
+          Serial.println("1 1");
           break;
       }
       break;
@@ -57,11 +57,11 @@ void parseCMD(int comm1, int comm2)
       {
         case 0:
           digitalWrite(keymatic_close, LOW);
-          Serial.println('0');
+          Serial.println("2 0");
           break;
         case 1:
           digitalWrite(keymatic_close, HIGH);
-          Serial.println('1');
+          Serial.println("2 1");
           break;
       }
       break;
@@ -71,11 +71,11 @@ void parseCMD(int comm1, int comm2)
       {
         case 0:
           digitalWrite(status_pin, LOW);
-          Serial.println('0');
+          Serial.println("3 0");
           break;
         case 1:
           digitalWrite(status_pin, HIGH);
-          Serial.println('1');
+          Serial.println("3 1");
           break;
       }
       break;
@@ -84,11 +84,11 @@ void parseCMD(int comm1, int comm2)
       {
         case 0:
           digitalWrite(beeper, LOW);
-          Serial.println('0');
+          Serial.println("4 0");
           break;
         case 1:
           digitalWrite(beeper, HIGH);
-          Serial.println('1');
+          Serial.println("4 1");
           break;
       }
       break;
@@ -106,10 +106,11 @@ void parseCMD(int comm1, int comm2)
       switch(comm2)
       {
         case 0:
-          Serial.println(closing_requested);
+          Serial.println("20 " +  String(closing_requested));
           break;
         case 1:
           closing_requested = 0;
+          Serial.println("20 " +  String(closing_requested));
           break;
       }
       break;
