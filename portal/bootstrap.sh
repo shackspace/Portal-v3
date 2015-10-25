@@ -6,7 +6,7 @@ set -e
 
 aptitude -y update
 aptitude -y safe-upgrade
-aptitude -y install git hostapd udhcpd python-virtualenv python-dev build-essential bind9
+aptitude -y install git hostapd udhcpd python-virtualenv python-dev build-essential bind9 supervisor
 
 
 #clone repo
@@ -36,27 +36,28 @@ ln -sf /opt/Portal-v3/portal/config/cron.d/portal /etc/cron.d/portal
 
 ln -sf /opt/Portal-v3/portal/config/ssh/sshd_config /etc/ssh/sshd_config
 
+ln -sf /opt/Portal-v3/portal/config/supervisor/portal_close_button.conf /etc/supervisor/conf.d/portal_close_button.conf
+
 #restart hostapd and udhcpd
 service hostapd restart
 service udhcpd restart
 service bind9 restart
+service supervisor restart
 
 #add group portal
 groupadd portal
 
 #add user open
-useradd -b /home --create-home -G dialout open
+useradd -b /home --create-home -G dialout,portal open
 mkdir /home/open/.ssh
 chown open:open /home/open/.ssh
 chmod 700 /home/open/.ssh
-gpasswd -a open portal
 
 #add user close
-useradd -b /home --create-home -G dialout close
+useradd -b /home --create-home -G dialout,portal close
 mkdir /home/close/.ssh
 chown close:close /home/close/.ssh
 chmod 700 /home/close/.ssh
-gpasswd -a close portal
 
 #add logging
 mkdir -p /var/log/portal/
