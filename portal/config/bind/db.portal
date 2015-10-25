@@ -8,5 +8,5 @@ portal.                          IN      SOA     portal.portal. key.lists.shacks
 ;
                                 IN      NS      portal.portal.
 
-portal                          IN      A       192.168.1.1
+portal                          IN      A       172.16.0.1
 

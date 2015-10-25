@@ -1,0 +1,24 @@
+#!/bin/sh -e 
+
+echo -e "4 1\n" > /dev/ttyACM0
+echo -e "4 1\n" > /dev/ttyACM0
+echo -e "4 1\n" > /dev/ttyACM0
+echo -e "4 1\n" > /dev/ttyACM0
+echo -e "4 1\n" > /dev/ttyACM0
+echo -e "4 1\n" > /dev/ttyACM0
+echo -e "4 1\n" > /dev/ttyACM0
+echo -e "4 1\n" > /dev/ttyACM0
+sleep 2
+echo -e "4 0\n" > /dev/ttyACM0
+echo -e "4 0\n" > /dev/ttyACM0
+echo -e "4 0\n" > /dev/ttyACM0
+echo -e "4 0\n" > /dev/ttyACM0
+echo -e "4 0\n" > /dev/ttyACM0
+echo -e "4 0\n" > /dev/ttyACM0
+echo -e "4 0\n" > /dev/ttyACM0
+echo -e "4 0\n" > /dev/ttyACM0
+
+mkdir /var/run/portal
+chgrp portal /var/run/portal 
+
+exit 0
