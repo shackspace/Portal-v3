@@ -15,9 +15,9 @@ void setup()
   pinMode(keymatic_close, OUTPUT);
   pinMode(status_pin, OUTPUT);
   pinMode(beeper, OUTPUT);
-  pinMode(closebutton, INPUT);
-  pinMode(doorcontact, INPUT);
-  pinMode(reedcontact, INPUT);
+  pinMode(closebutton, INPUT_PULLUP);
+  pinMode(doorcontact, INPUT_PULLUP);
+  pinMode(reedcontact, INPUT_PULLUP);
   
 }
 
@@ -94,13 +94,13 @@ void parseCMD(int comm1, int comm2)
       break;
       
     case 10:
-      Serial.println(digitalRead(closebutton));
+      Serial.println("10 " + String(digitalRead(closebutton)));
       break;
     case 11:
-      Serial.println(digitalRead(doorcontact));
+      Serial.println("11 " + String(digitalRead(doorcontact)));
       break;
     case 12:
-      Serial.println(digitalRead(reedcontact));
+      Serial.println("11 " + String(digitalRead(reedcontact)));
       break;
     case 20:
       switch(comm2)
