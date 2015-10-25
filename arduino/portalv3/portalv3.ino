@@ -29,7 +29,7 @@ void loop()
   {
     parseCMD(comm1, comm2);
   }
-  if(digitalRead(closebutton))
+  if(!digitalRead(closebutton))
   {
     closing_requested = 1;
   }
@@ -100,7 +100,7 @@ void parseCMD(int comm1, int comm2)
       Serial.println("11 " + String(digitalRead(doorcontact)));
       break;
     case 12:
-      Serial.println("11 " + String(digitalRead(reedcontact)));
+      Serial.println("12 " + String(digitalRead(reedcontact)));
       break;
     case 20:
       switch(comm2)
