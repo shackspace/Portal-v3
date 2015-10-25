@@ -1,6 +1,8 @@
 #!/usr/bin/env python2
 import serial
 import subprocess
+import time
+import datetime
 
 SERPORT = '/dev/ttyACM0'
 SERBAUD = 9600
@@ -9,12 +11,15 @@ SERTIMEOUT = 1
 BUTTON_PIN = 20
 
 
-def set_pin(pin, state):
+def set_pin(pin, state, expected=None):
     if state:
         state = "1"
     else:
         state = "0"
     # print ("set", pin, state)
+
+    if expected is None:
+        expected = state
 
     for _ in xrange(10):
         SER = serial.Serial(SERPORT, SERBAUD, timeout=SERTIMEOUT)
@@ -32,7 +37,7 @@ def set_pin(pin, state):
             # print ("fail: set", pin, state, org)
             continue
         set_state = ret[1]
-        if set_state.strip() == state:
+        if set_state.strip() == expected:
             # print ("set", pin, state, org)
             return
         else:
@@ -49,6 +54,7 @@ def get_pin(pin):
         # org = ret
         ret = ret.strip()
         ret = ret.split()
+        # print ret
         if len(ret) < 2:
             # print ("fail: get to short", pin, org )
             continue
@@ -67,17 +73,18 @@ def get_pin(pin):
 def main():
     button_pushed = get_pin(BUTTON_PIN)
     if button_pushed:
-        print "door close requested by button"
-        subprocess.call("/opt/Portal-v3/portal/portal.py",
-                        ["-a", "close",
+        print datetime.datetime.now() + ": door close requested by button"
+        subprocess.call(["/opt/Portal-v3/portal/portal.py",
+                         "-a", "close",
                          "-s", "0000",
                          "-n", "\"CloseButton\"",
                          "-l", "2023-04-02",
                          "-f", "2015-04-25",
                          "--nick", "\"CloseButton\""])
-
-        set_pin(BUTTON_PIN, True)
+        set_pin(BUTTON_PIN, True, expected="0")
 
 
 if __name__ == '__main__':
-    main()
+    while True:
+        main()
+        time.sleep(1)
