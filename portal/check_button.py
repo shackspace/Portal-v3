@@ -73,7 +73,7 @@ def get_pin(pin):
 def main():
     button_pushed = get_pin(BUTTON_PIN)
     if button_pushed:
-        print datetime.datetime.now() + ": door close requested by button"
+        print str(datetime.datetime.now()) + ": door close requested by button"
         subprocess.call(["/opt/Portal-v3/portal/portal.py",
                          "-a", "close",
                          "-s", "0000",
