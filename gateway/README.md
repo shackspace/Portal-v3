@@ -18,12 +18,13 @@ POST /push
 
 ### curl example
 
-curl -XPOST -d '{"status":"open", "nick": "root"}' -H "Content-type:application/json" 'http://10.0.2.10/push'
-
+curl -XPOST -d '{"status":"open", "keyholder": "root"}' -H "Content-type: application/json" 'http://10.42.irgendwas:8088/push'
 
 ## Public-facing API
 
-GET /status
+GET /status (from inside):
+
+curl "http://portal.shack:8088/status" 
 
 returns
 {
