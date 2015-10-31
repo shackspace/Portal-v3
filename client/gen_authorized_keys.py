@@ -108,7 +108,7 @@ def gen_keyfile(dataset, task):
         line += command
         line += ' ' + parameterlist
         line += "\"," + security_options + " "
-        line += keymember["pubkey"]
+        line += keymember["pubkey"].strip()
         line += "\n"
 
         f.write(line)
