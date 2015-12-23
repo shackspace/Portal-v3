@@ -29,8 +29,8 @@ LOGLEVEL = 2
 
 
 def main():
-    beep(0.1)
     motd()
+    beep(0.1)
     parser = get_option_parser()
     (options, args) = parser.parse_args()
     check_options(options)
