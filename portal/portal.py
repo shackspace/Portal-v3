@@ -69,13 +69,16 @@ class SerialCommunication():
                 return True
         log("get failded for " + str(pin))
 
-    def set_pin(self, pin, state):
+    def set_pin(self, pin, state, expected=None):
         self.validate_connection()
         if state:
             state = "1"
         else:
             state = "0"
         # print ("set", pin, state)
+
+        if expected is None:
+            expected = state
 
         for _ in xrange(10):
             self.ser.write(str(pin) + " " + state + "\n")
@@ -91,7 +94,7 @@ class SerialCommunication():
                 # print ("fail: set", pin, state, org)
                 continue
             set_state = ret[1]
-            if set_state.strip() == state:
+            if set_state.strip() == expected:
                 # print ("set", pin, state, org)
                 return
             else:
