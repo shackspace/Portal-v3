@@ -9,7 +9,7 @@ RET=$?
 
 if [ $RET -eq 1 ]; then
     STATUS='open'; 
-elif [ $RET -eq -1 ]; then
+elif [ $RET -eq 255 ]; then
     STATUS='unknown';
 fi;
 
