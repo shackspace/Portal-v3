@@ -6,9 +6,11 @@ status = require './status'
 config = require '../config'
 express = require 'express'
 bodyparser = require 'body-parser'
+cors = require 'cors'
 
 app = express()
 app.use log4js.connectLogger log, { level: log4js.levels.INFO }
+app.use cors()
 
 app.get '/status', (req, res) ->
 	res.json status.get()
