@@ -6,7 +6,7 @@ set -e
 
 aptitude -y update
 aptitude -y safe-upgrade
-aptitude -y install git hostapd udhcpd python-virtualenv python-dev build-essential bind9 supervisor
+aptitude -y install git hostapd udhcpd python-virtualenv python-dev build-essential bind9 supervisor openssh-server
 
 
 #clone repo
