@@ -60,6 +60,7 @@ service bind9 restart
 service supervisor restart
 systemctl restart ssh.service
 systemctl enable ssh.service
+systemctl disable dhcpcd
 
 #add logging
 mkdir -p /var/log/portal/
