@@ -320,7 +320,6 @@ def update_keyholder(name):
         f.write(name)
         gid = grp.getgrnam("portal").gr_gid
         uid = uid = pwd.getpwnam("open").pw_uid
-        os.chown(STATUSFILE, uid, gid)
 
 
 def get_option_parser():
