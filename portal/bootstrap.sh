@@ -38,12 +38,6 @@ ln -sf /opt/Portal-v3/portal/config/ssh/sshd_config /etc/ssh/sshd_config
 
 ln -sf /opt/Portal-v3/portal/config/supervisor/portal_close_button.conf /etc/supervisor/conf.d/portal_close_button.conf
 
-#restart hostapd and udhcpd
-service hostapd restart
-service udhcpd restart
-service bind9 restart
-service supervisor restart
-
 #add group portal
 groupadd portal
 
@@ -58,6 +52,12 @@ useradd -b /home --create-home -G dialout,portal close
 mkdir /home/close/.ssh
 chown close:close /home/close/.ssh
 chmod 700 /home/close/.ssh
+
+#restart hostapd and udhcpd
+service hostapd restart
+service udhcpd restart
+service bind9 restart
+service supervisor restart
 
 #add logging
 mkdir -p /var/log/portal/
