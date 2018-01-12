@@ -14,8 +14,10 @@ app.use(bodyparser.json())
 app.post '/push', (req, res) ->
 	if req.body?.status?
 		log.info 'portal reports', req.body.status
-		if req.body.status in ['open', 'closed']
-			status.set req.body.status, req.body.keyholder
+		if req.body.status is 'open'
+			status.set 'open', req.body.keyholder
+		if req.body.status is 'closed'
+			status.set 'closed'
 		else
 			log.warn 'invalid status:', req.body.status
 	res.end()
